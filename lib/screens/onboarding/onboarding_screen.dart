@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cyber_dojo/screens/auth/login_screen.dart';
+import 'package:cyber_dojo/screens/auth/register_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -90,7 +92,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
                 onPressed: () {
-                  // TODO: Ir a pantalla de registro
+                  Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const RegisterScreen()),
+    );
                 },
                 child: const Text(
                   "Crear cuenta",
@@ -108,7 +113,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             // Texto inferior con opción de iniciar sesión
             GestureDetector(
               onTap: () {
-                // TODO: Navegar a Login
+                Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
               },
               child: const Padding(
                 padding: EdgeInsets.only(bottom: 20),
