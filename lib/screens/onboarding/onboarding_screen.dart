@@ -15,22 +15,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<Map<String, String>> onboardingData = [
     {
       "image": "assets/images/onBoarding/onBng1.svg",
-      "text": "Entrena como un ninja digital",
+      "title": "Entrena como un ninja digital",
+      "subtitle": "Domina la ciberseguridad desde cero",
     },
     {
-      "image": "assets/images/onBoarding/onBng2.png",
-      "text": "Avanza de cinturón en cinturón",
+      "image": "assets/images/onBoarding/onBng2.svg",
+      "title": "Avanza de cinturón en cinturón",
+      "subtitle": "Supera lecciones y sube de rango en tu camino a la ciberseguridad",
     },
     {
       "image": "assets/images/onBoarding/onBng3.svg",
-      "text": "Protege, aprende, domina",
+      "title": "Protege, aprende, domina",
+      "subtitle": "Conviértete en un experto en seguridad paso a paso",
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A192F),
+      backgroundColor: const Color(0xffFFE1A8),
       body: SafeArea(
         child: Column(
           children: [
@@ -47,7 +50,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 itemCount: onboardingData.length,
                 itemBuilder: (context, index) => OnboardContent(
                   image: onboardingData[index]["image"]!,
-                  text: onboardingData[index]["text"]!,
+                  title: onboardingData[index]["title"]!,
+                  subtitle: onboardingData[index]["subtitle"]!,
                 ),
               ),
             ),
@@ -64,7 +68,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   width: _currentPage == index ? 20 : 8,
                   decoration: BoxDecoration(
                     color: _currentPage == index
-                        ? Colors.blueAccent
+                        ? const Color(0xff723D46)
                         : Colors.white54,
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -79,7 +83,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 40.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor: const Color(0xff723D46),
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -111,7 +115,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Text(
                   "¿Ya tienes una cuenta? Inicia sesión",
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: Colors.black54,
                     fontSize: 16,
                   ),
                 ),
@@ -125,9 +129,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 }
 
 class OnboardContent extends StatelessWidget {
-  final String image, text;
+  final String image;
+  final String title;
+  final String subtitle;
 
-  const OnboardContent({super.key, required this.image, required this.text});
+  const OnboardContent({super.key, required this.image, required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -136,18 +142,28 @@ class OnboardContent extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset(
+           SvgPicture.asset(
             image,
             height: 250,
           ),
           const SizedBox(height: 40),
           Text(
-            text,
+            title,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
+              color: Colors.black87,
+              fontSize: 26,
               fontWeight: FontWeight.w600,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.black87,
+              fontSize: 20,
               height: 1.4,
             ),
           ),
