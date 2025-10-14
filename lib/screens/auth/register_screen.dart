@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cyber_dojo/screens/auth/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -166,7 +167,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // TODO: Navegar a iniciar sesión
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      );
                     },
                     child: const Text(
                       "¿Ya tienes una cuenta? Inicia sesión",
