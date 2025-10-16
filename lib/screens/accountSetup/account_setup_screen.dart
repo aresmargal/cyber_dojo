@@ -9,12 +9,12 @@ class AccountSetupScreen extends StatefulWidget {
 }
 
 class AccountSetupData {
-  final String image;
+  final String imageSvg;
   final String title;
   final List<String> options;
 
   AccountSetupData({
-    required this.image,
+    required this.imageSvg,
     required this.title,
     required this.options,
   });
@@ -22,28 +22,29 @@ class AccountSetupData {
 
 final List<AccountSetupData> setupPages = [
   AccountSetupData(
-    image: 'assets/images/level.svg',
+    imageSvg: 'assets/images/accountSetup/accSt1.svg',
     title: '¿Qué nivel tienes?',
     options: ['Principiante', 'Intermedio', 'Avanzado'],
   ),
   AccountSetupData(
-    image: 'assets/images/daily.svg',
+    imageSvg: 'assets/images/accountSetup/accSt2.svg',
     title: '¿Cuánto quieres entrenar al día?',
     options: ['10 min', '30 min', '1 hora'],
   ),
   AccountSetupData(
-    image: 'assets/images/goals.svg',
+    imageSvg: 'assets/images/accountSetup/accSt3.svg',
     title: '¿Cuál es tu objetivo principal?',
     options: ['Aprender teoría', 'Hacer prácticas', 'Ambos'],
   ),
 ];
 
 class _AccountSetupScreenState extends State<AccountSetupScreen> {
+  final PageController _pageController = PageController();
   int currentPage = 0;
-  int? selectedOption;
+  final Map<int, int?> selectedOptions = {};
 
   void _nextPage() {
-    if (selectedOption == null) {
+    if (selectedOptions[currentPage] == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Selecciona una opción")),
       );
@@ -51,22 +52,29 @@ class _AccountSetupScreenState extends State<AccountSetupScreen> {
     }
 
     if (currentPage < setupPages.length - 1) {
-      setState(() {
-        currentPage++;
-        selectedOption = null; // reset para la siguiente página
-      });
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     } else {
-      // TODO: Guardar configuración y navegar a Home
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("¡Configuración completada!")),
+      );
+      // TODO: Guardar datos y navegar a Home
+    }
+  }
+
+  void _previousPage() {
+    if (currentPage > 0) {
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final pageData = setupPages[currentPage];
-
     return Scaffold(
       backgroundColor: const Color(0xFFFFE1A8),
       appBar: AppBar(
@@ -79,88 +87,131 @@ class _AccountSetupScreenState extends State<AccountSetupScreen> {
         elevation: 0,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 30),
-          child: Column(
-            children: [
-              // Imagen SVG centrada
-              SvgPicture.asset(
-                pageData.image,
-                height: 180,
-              ),
-              const SizedBox(height: 20),
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                physics: const BouncingScrollPhysics(),
+                onPageChanged: (index) {
+                  setState(() {
+                    currentPage = index;
+                  });
+                },
+                itemCount: setupPages.length,
+                itemBuilder: (context, index) {
+                  final page = setupPages[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 20),
+                    child: Column(
+                      children: [
+                        SvgPicture.asset(
+                          page.imageSvg,
+                          height: 140,
+                        ),
+                        const SizedBox(height: 15),
+                        Text(
+                          page.title,
+                          style: const TextStyle(
+                            color: Color(0xFF723D46),
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 20),
 
-              // Título
-              Text(
-                pageData.title,
-                style: const TextStyle(
-                  color: Color(0xFF723D46),
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 30),
-
-              // Opciones
-              ...List.generate(pageData.options.length, (index) {
-                final option = pageData.options[index];
-                final isSelected = selectedOption == index;
-
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedOption = index;
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFF472D30)
-                          : const Color(0xFF723D46),
-                      borderRadius: BorderRadius.circular(12),
+                        // Opciones
+                        ...List.generate(page.options.length, (optIndex) {
+                          final isSelected =
+                              selectedOptions[index] == optIndex;
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedOptions[index] = optIndex;
+                              });
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 14),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? const Color(0xFF472D30)
+                                    : const Color(0xFF723D46),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                page.options[optIndex],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
                     ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      option,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                  );
+                },
+              ),
+            ),
+
+            // Botones de navegación
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              child: Row(
+                children: [
+                  if (currentPage > 0)
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF723D46),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: _previousPage,
+                        child: const Text(
+                          "Atrás",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (currentPage > 0) const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFC9CBA3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: _nextPage,
+                      child: Text(
+                        currentPage == setupPages.length - 1
+                            ? "Finalizar"
+                            : "Siguiente",
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                );
-              }),
-
-              const Spacer(),
-
-              // Botón Siguiente
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFC9CBA3),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: _nextPage,
-                  child: const Text(
-                    "Siguiente",
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
