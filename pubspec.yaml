@@ -55,11 +55,14 @@ flutter:
   
   assets:
     - assets/images/
+    - assets/images/loginScreen.svg
+    - assets/images/logoNoNombre.png
     - assets/images/onBoarding/onBng1.svg
     - assets/images/onBoarding/onBng2.svg
     - assets/images/onBoarding/onBng3.svg
-    - assets/images/loginScreen.svg
-    - assets/images/logoNoNombre.png
+    - assets/images/accountSetup/accSt1.svg
+    - assets/images/accountSetup/accSt2.svg
+    - assets/images/accountSetup/accSt3.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

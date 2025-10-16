@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/auth/login_screen.dart';
+import 'package:cyber_dojo/screens/accountSetup/account_setup_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -142,12 +143,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content:
-                                Text("Cuenta creada con éxito. Bienvenido a CyberDojo."),
-                          ),
-                        );
+                        Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(builder: (context) => const AccountSetupScreen()),
+);
                       }
                     },
                     child: const Text(
