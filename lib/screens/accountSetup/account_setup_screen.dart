@@ -23,18 +23,18 @@ class AccountSetupData {
 final List<AccountSetupData> setupPages = [
   AccountSetupData(
     imageSvg: 'assets/images/accountSetup/accSt1.svg',
-    title: '¿Qué nivel tienes?',
-    options: ['Principiante', 'Intermedio', 'Avanzado'],
+    title: '¿Cuál es tu nivel en ciberseguridad?',
+    options: ['Principiante absoluto', 'Tengo algunas nociones', 'Sé bastante y quiero mejorar'],
   ),
   AccountSetupData(
     imageSvg: 'assets/images/accountSetup/accSt2.svg',
-    title: '¿Cuánto quieres entrenar al día?',
-    options: ['10 min', '30 min', '1 hora'],
+    title: '¿Qué quieres aprender con CyberDojo',
+    options: ['Protegerme en Internet', 'Descubrir trucos de hackers', 'Ser un ninja digital'],
   ),
   AccountSetupData(
     imageSvg: 'assets/images/accountSetup/accSt3.svg',
-    title: '¿Cuál es tu objetivo principal?',
-    options: ['Aprender teoría', 'Hacer prácticas', 'Ambos'],
+    title: '¿Cuánto quieres entrenar al día?',
+    options: ['Un poco (5 minutos)', 'Un rato (10 minutos)', 'Modo ninja (15 minutos)'],
   ),
 ];
 
