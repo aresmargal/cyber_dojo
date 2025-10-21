@@ -54,43 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFE1A8),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF723D46),
-        elevation: 0,
-        toolbarHeight: 80,
-        title: Row(
-          children: [
-            // Foto de perfil
-            const CircleAvatar(
-              radius: 25,
-              backgroundImage: AssetImage('assets/images/pfp/pfp4.png'),
-            ),
-            const SizedBox(width: 12),
-            // Bienvenida y racha
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Bienvenido a tu Dojo, $username",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  "Racha de entrenamiento: $trainingStreak 🔥",
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+      
 
       // Contenido principal
       body: SingleChildScrollView(
@@ -167,33 +131,6 @@ class _HomeScreenState extends State<HomeScreen> {
 )
           ],
         ),
-      ),
-
-      // TODO: --- Menú inferior ---
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF723D46),
-        selectedItemColor: const Color(0xFFFFE1A8),
-        unselectedItemColor: Colors.white70,
-        showUnselectedLabels: true,
-        
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Inicio",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Dojo",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Cursos",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Perfil",
-          ),
-        ],
       ),
     );
   }
