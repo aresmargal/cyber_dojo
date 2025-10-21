@@ -1,3 +1,4 @@
+import 'package:cyber_dojo/screens/homeCourses/course_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class CoursesScreen extends StatefulWidget {
@@ -76,7 +77,8 @@ class _CoursesScreenState extends State<CoursesScreen> {
               final course = courses[index];
               return GestureDetector(
                 onTap: () {
-                  print("Abrir curso: ${course['title']}");
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const CourseDetailScreen()),
+                  );
                 },
                 child: Container(
                   decoration: BoxDecoration(
