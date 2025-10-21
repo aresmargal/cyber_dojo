@@ -1,5 +1,4 @@
 import 'package:cyber_dojo/screens/dojoScreens/dojo_main_screen.dart';
-import 'package:cyber_dojo/screens/homeCourses/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -14,7 +13,7 @@ class _MainScreenState extends State<MainScreen> {
 
   // Lista de pantallas
   final List<Widget> _screens = const [
-    HomeScreen(),
+    
     DojoScreen()
   ];
 
