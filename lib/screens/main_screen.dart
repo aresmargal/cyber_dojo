@@ -15,7 +15,7 @@ class _MainScreenState extends State<MainScreen> {
   // Lista de pantallas
   final List<Widget> _screens = const [
     HomeScreen(),
-    CoursesScreen(),
+    CoursesScreen(), // index: 1, real: 2, falta DojoScreen
   ];
 
   @override
@@ -23,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFE1A8),
 
-       // 🔹 Cabecera personalizada
+       // Cabecera personalizada
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: Container(
@@ -41,7 +41,7 @@ class _MainScreenState extends State<MainScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Foto de perfil (temporal o del usuario)
+              // Foto de perfil
               const CircleAvatar(
                 radius: 25,
                 backgroundImage: AssetImage("assets/images/pfp/pfp4.png"),
