@@ -1,3 +1,4 @@
+import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_text_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_main_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_screen.dart';
@@ -12,20 +13,31 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 1; // 0 = home, 1 = dojo, etc.
   String? _selectedCourse; // Guarda el curso actual abierto
+  Map<String, String>? _selectedLesson; // Guarda la lección actual
 
   @override
   Widget build(BuildContext context) {
     // Elegir qué mostrar en el body
     Widget body;
-    if (_selectedCourse != null) {
+    if (_selectedLesson != null) {
+      body = DojoLessonTextScreen(
+        courseTitle: _selectedCourse!,
+        lessonTitle: _selectedLesson!["title"]!,
+        lessonText: _selectedLesson!["text"]!,
+        onBack: () => setState(() => _selectedLesson = null),
+        onNext: () {
+          // pasar a siguiente lección
+        },
+      );
+    } else if (_selectedCourse != null) {
       body = DojoCourseScreen(
         courseTitle: _selectedCourse!,
-        onBack: () {
-          setState(() => _selectedCourse = null);
+        onBack: () => setState(() => _selectedCourse = null),
+        onLessonSelected: (lesson) {
+          setState(() => _selectedLesson = lesson);
         },
       );
     } else {
-      // Pantallas normales
       final List<Widget> _screens = [
         const Center(child: Text("Inicio")),
         DojoScreen(
@@ -36,7 +48,6 @@ class _MainScreenState extends State<MainScreen> {
         const Center(child: Text("Cursos")),
         const Center(child: Text("Perfil")),
       ];
-
       body = _screens[_selectedIndex];
     }
 
@@ -47,8 +58,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: Container(
-          padding:
-              const EdgeInsets.only(top: 50, left: 20, right: 16, bottom: 16),
+          padding: const EdgeInsets.only(top: 50, left: 20, right: 16, bottom: 16),
           decoration: const BoxDecoration(
             color: Color(0xFF723D46),
             boxShadow: [
@@ -99,7 +109,6 @@ class _MainScreenState extends State<MainScreen> {
 
       body: body,
 
-      // Menú inferior
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF723D46),
         selectedItemColor: const Color(0xFFFFE1A8),
@@ -108,7 +117,8 @@ class _MainScreenState extends State<MainScreen> {
         currentIndex: _selectedIndex,
         onTap: (index) {
           setState(() {
-            _selectedCourse = null; // Salir de curso si cambias de pestaña
+            _selectedCourse = null;
+            _selectedLesson = null; 
             _selectedIndex = index;
           });
         },
