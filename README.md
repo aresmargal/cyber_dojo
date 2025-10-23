@@ -21,7 +21,7 @@ Para ejecutar **CyberDojo** localmente:
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/usuario/CyberDojo.git
+git clone https://github.com/aresmargal/cyber_dojo.git
 
 # Entrar en el directorio
 cd CyberDojo
