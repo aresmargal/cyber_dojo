@@ -38,39 +38,45 @@ flutter run
 ## Comparativa Mockups VS Aplicación Final
 
 **-  SplashScreen & Onboarding Screens**
-  //Mockups
+  
+  Mockups
   <img width="3941" height="1036" alt="splashYonBngScreen" src="https://github.com/user-attachments/assets/6268772b-6d32-4188-a4a7-9ba9161c9569" />
 
-  //Aplicación Final
+  Aplicación Final
   
 **-  Login & Sign Up**
-  //Mockups
+  
+  Mockups
   <img width="3942" height="1051" alt="loginSignScreen" src="https://github.com/user-attachments/assets/d3d9c684-1518-4844-aae9-041454d219f5" />
 
-  //Aplicación Final
+  Aplicación Final
   
 **-  Account Setup**
-  //Mockups
+  
+  Mockups
   <img width="3942" height="1038" alt="accountSetupScreen" src="https://github.com/user-attachments/assets/87348638-f2a4-43b5-ad69-141ba59d91d6" />
 
-  //Aplicación Final
+  Aplicación Final
   
 **-  Home, Dojo**
-  //Mockups
+  
+  Mockups
   <img width="3942" height="1004" alt="homYDojoScreen" src="https://github.com/user-attachments/assets/f357c008-f65c-42b9-bfbf-ce44293e8884" />
 
-  //Aplicación Final
+  Aplicación Final
 
   **-  Courses**
-  //Mockups
+  
+  Mockups
   <img width="3942" height="1008" alt="coursesScreen" src="https://github.com/user-attachments/assets/3704c8b8-135b-49c0-b1c2-71178b1a49e1" />
 
   
-  //Aplicación Final
+  Aplicación Final
   
 **-  Profile**
-  //Mockups
+  
+  Mockups
   <img width="3942" height="956" alt="profileScreen" src="https://github.com/user-attachments/assets/d74a73da-d16c-4443-92ce-2e7cac485ffd" />
 
   
-  //Aplicación Final
+  Aplicación Final
