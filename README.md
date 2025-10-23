@@ -52,7 +52,8 @@ flutter run
   <img width="3942" height="1051" alt="loginSignScreen" src="https://github.com/user-attachments/assets/d3d9c684-1518-4844-aae9-041454d219f5" />
 
   Aplicación Final
-  
+  <img width="481" height="462" alt="loginSignup" src="https://github.com/user-attachments/assets/51baca8b-dbab-4d6c-b515-73acb133ebd6" />
+
 **-  Account Setup**
   
   Mockups
