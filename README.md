@@ -43,6 +43,8 @@ flutter run
   <img width="3941" height="1036" alt="splashYonBngScreen" src="https://github.com/user-attachments/assets/6268772b-6d32-4188-a4a7-9ba9161c9569" />
 
   Aplicación Final
+  <img width="3941" height="1036" alt="splashYonBngScreen" src="https://github.com/user-attachments/assets/fb8f909d-0a65-47f0-9a16-56a7846b1398" />
+
   
 **-  Login & Sign Up**
   
