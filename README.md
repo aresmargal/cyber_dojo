@@ -63,6 +63,8 @@ flutter run
 
 
   Aplicación Final
+
+  
   <img width="669" height="451" alt="accountSetup" src="https://github.com/user-attachments/assets/10f53910-d13d-435a-99e4-ed9f9b3312c5" />
   
 
