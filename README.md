@@ -84,7 +84,7 @@ flutter run
   Aplicación Final
   <img width="932" height="462" alt="homoDojo" src="https://github.com/user-attachments/assets/2e268cb8-6da7-4cc8-8350-8f211d626700" />
   
-
+------últimas 4 pantallas en desarrollo
 
 
 
