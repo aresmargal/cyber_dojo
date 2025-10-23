@@ -52,6 +52,7 @@ flutter run
   <img width="3942" height="1051" alt="loginSignScreen" src="https://github.com/user-attachments/assets/d3d9c684-1518-4844-aae9-041454d219f5" />
 
   Aplicación Final
+  
   <img width="481" height="462" alt="loginSignup" src="https://github.com/user-attachments/assets/51baca8b-dbab-4d6c-b515-73acb133ebd6" />
 
 **-  Account Setup**
@@ -60,13 +61,17 @@ flutter run
   <img width="3942" height="1038" alt="accountSetupScreen" src="https://github.com/user-attachments/assets/87348638-f2a4-43b5-ad69-141ba59d91d6" />
 
   Aplicación Final
+  <img width="669" height="451" alt="accountSetup" src="https://github.com/user-attachments/assets/10f53910-d13d-435a-99e4-ed9f9b3312c5" />
   
+
 **-  Home, Dojo**
   
   Mockups
   <img width="3942" height="1004" alt="homYDojoScreen" src="https://github.com/user-attachments/assets/f357c008-f65c-42b9-bfbf-ce44293e8884" />
 
   Aplicación Final
+  <img width="932" height="462" alt="homoDojo" src="https://github.com/user-attachments/assets/2e268cb8-6da7-4cc8-8350-8f211d626700" />
+  
 
   **-  Courses**
   
