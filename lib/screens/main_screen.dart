@@ -1,3 +1,4 @@
+import 'package:cyber_dojo/screens/dojoScreens/dojo_course_completed_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_text_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_main_screen.dart';
@@ -44,7 +45,33 @@ class _MainScreenState extends State<MainScreen> {
         },
         onNext: () {
           // Volver al listado de lecciones
-          setState(() => _selectedLesson = null);
+          //setState(() => _selectedLesson = null);
+          //Prueba completed screen
+          setState(() {
+            _selectedLesson = {
+              "type": "completed",
+              "title": _selectedLesson!["title"]!,
+              "text": _selectedLesson!["text"]!,
+            };
+          });
+        },
+      );
+    } else if (_selectedCourse != null && _selectedLesson?["type"] == "completed") {
+      body = DojoCourseCompletedScreen (
+        courseTitle: _selectedCourse!,
+        courseDescription:
+            "Aprende las bases de la ciberseguridad mientras entrenas como un ninja digital.",
+        courseImage: "",
+        medals: [
+          "",
+          "",
+          "",
+        ],
+        onBackToCourses: () {
+          setState(() {
+            _selectedLesson = null;
+            _selectedCourse = null;
+          });
         },
       );
     } else if (_selectedLesson != null) {
