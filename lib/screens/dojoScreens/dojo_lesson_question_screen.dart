@@ -37,6 +37,14 @@ class _DojoLessonQuestionScreenState extends State<DojoLessonQuestionScreen> {
       _isAnswered = true;
       _isCorrect = _selectedIndex == widget.correctAnswerIndex;
     });
+
+    if (!_isCorrect) {
+      Future.delayed(const Duration(seconds: 1), () {
+        setState(() {
+          _isAnswered = false; // reactivar opciones si no es correcta
+        });
+      });
+    }
   }
 
   @override
@@ -103,19 +111,17 @@ class _DojoLessonQuestionScreenState extends State<DojoLessonQuestionScreen> {
 
             const SizedBox(height: 20),
 
-            //  Opciones
+            // Opciones
             ...List.generate(widget.options.length, (index) {
               final isSelected = _selectedIndex == index;
               Color optionColor;
 
               if (_isAnswered) {
-                if (index == widget.correctAnswerIndex) {
-                  optionColor = const Color(0xFF472D30); // correcta
-                } else if (isSelected) {
-                  optionColor = Colors.red.shade900.withOpacity(0.8);
-                } else {
-                  optionColor = const Color(0x80723D46); // no seleccionada
-                }
+                 optionColor = isSelected
+                    ? (_isCorrect
+                        ? const Color(0xFF472D30) // correcto
+                        : Colors.red.shade900.withOpacity(0.8)) // incorrecto
+                    : const Color(0x80723D46);
               } else {
                 optionColor = isSelected
                     ? const Color(0xB3472D30)
@@ -177,13 +183,40 @@ class _DojoLessonQuestionScreenState extends State<DojoLessonQuestionScreen> {
               ),
             ),
 
+            // Mensaje correcto / incorrecto
+            if (_isAnswered) ...[
+              const SizedBox(height: 16),
+              Center(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: _isCorrect
+                        ? Colors.green.shade700
+                        : Colors.red.shade800,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    _isCorrect
+                        ? "¡Correcto, puedes seguir!"
+                        : "Incorrecto, prueba de nuevo.",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+
             const Spacer(),
 
             //  Botón circular inferior
             Align(
               alignment: Alignment.bottomRight,
               child: ElevatedButton(
-                onPressed: _isAnswered ? widget.onNext : null,
+                onPressed: _isCorrect ? widget.onNext : null,
                 style: ElevatedButton.styleFrom(
                   shape: const CircleBorder(),
                   backgroundColor: const Color(0xFF472D30),
