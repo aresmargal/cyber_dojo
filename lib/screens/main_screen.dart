@@ -2,6 +2,8 @@ import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_text_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_main_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_screen.dart';
+import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_question_screen.dart';
+
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -19,14 +21,48 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     // Elegir qué mostrar en el body
     Widget body;
-    if (_selectedLesson != null) {
+     if (_selectedCourse != null && _selectedLesson?["type"] == "question") {
+      //Mostrar pantalla de pregunta
+      body = DojoLessonQuestionScreen(
+        courseTitle: _selectedCourse!,
+        lessonTitle: _selectedLesson!["title"]!,
+        questionText: "¿Cuál de las siguientes contraseñas es más segura?",
+        options: [
+          "12345678",
+          "Lyd!@2024",
+          "contraseña",
+        ],
+        correctAnswerIndex: 1,
+        onBack: () {
+          // Volver al texto de la lección
+          setState(() {
+            _selectedLesson = {
+              "title": _selectedLesson!["title"]!,
+              "text": _selectedLesson!["text"]!,
+            };
+          });
+        },
+        onNext: () {
+          // Volver al listado de lecciones
+          setState(() => _selectedLesson = null);
+        },
+      );
+    } else if (_selectedLesson != null) {
+      //Mostrar pantalla de texto
       body = DojoLessonTextScreen(
         courseTitle: _selectedCourse!,
         lessonTitle: _selectedLesson!["title"]!,
         lessonText: _selectedLesson!["text"]!,
         onBack: () => setState(() => _selectedLesson = null),
         onNext: () {
-          // pasar a siguiente lección
+          // Cambiar al modo "pregunta"
+          setState(() {
+            _selectedLesson = {
+              "type": "question",
+              "title": _selectedLesson!["title"]!,
+              "text": _selectedLesson!["text"]!,
+            };
+          });
         },
       );
     } else if (_selectedCourse != null) {
@@ -34,7 +70,11 @@ class _MainScreenState extends State<MainScreen> {
         courseTitle: _selectedCourse!,
         onBack: () => setState(() => _selectedCourse = null),
         onLessonSelected: (lesson) {
-          setState(() => _selectedLesson = lesson);
+        setState(() => _selectedLesson = {
+          "type": "text",
+          "title": lesson["title"]!,
+          "text": lesson["text"]!,
+          });
         },
       );
     } else {
