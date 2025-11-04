@@ -1,6 +1,10 @@
-import 'package:cyber_dojo/screens/homeCourses/courses_screen.dart';
-import 'package:cyber_dojo/screens/homeCourses/home_screen.dart';
+import 'package:cyber_dojo/screens/dojoScreens/dojo_course_completed_screen.dart';
+import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_text_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:cyber_dojo/screens/dojoScreens/dojo_main_screen.dart';
+import 'package:cyber_dojo/screens/dojoScreens/dojo_course_screen.dart';
+import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_question_screen.dart';
+
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -10,20 +14,114 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-
-  // Lista de pantallas
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    CoursesScreen(), // index: 1, real: 2, falta DojoScreen
-  ];
+  int _selectedIndex = 1; // 0 = home, 1 = dojo, etc.
+  String? _selectedCourse; // Guarda el curso actual abierto
+  Map<String, String>? _selectedLesson; // Guarda la lección actual
 
   @override
   Widget build(BuildContext context) {
+    // Elegir qué mostrar en el body
+    Widget body;
+     if (_selectedCourse != null && _selectedLesson?["type"] == "question") {
+      //Mostrar pantalla de pregunta
+      body = DojoLessonQuestionScreen(
+        courseTitle: _selectedCourse!,
+        lessonTitle: _selectedLesson!["title"]!,
+        questionText: "¿Cuál de las siguientes contraseñas es más segura?",
+        options: [
+          "12345678",
+          "Lyd!@2024",
+          "contraseña",
+        ],
+        correctAnswerIndex: 1,
+        onBack: () {
+          // Volver al texto de la lección
+          setState(() {
+            _selectedLesson = {
+              "title": _selectedLesson!["title"]!,
+              "text": _selectedLesson!["text"]!,
+            };
+          });
+        },
+        onNext: () {
+          // Volver al listado de lecciones
+          //setState(() => _selectedLesson = null);
+          //Prueba completed screen
+          setState(() {
+            _selectedLesson = {
+              "type": "completed",
+              "title": _selectedLesson!["title"]!,
+              "text": _selectedLesson!["text"]!,
+            };
+          });
+        },
+      );
+    } else if (_selectedCourse != null && _selectedLesson?["type"] == "completed") {
+      body = DojoCourseCompletedScreen (
+        courseTitle: _selectedCourse!,
+        courseDescription:
+            "Aprende las bases de la ciberseguridad mientras entrenas como un ninja digital.",
+        courseImage: "",
+        medals: [
+          "",
+          "",
+          "",
+        ],
+        onBackToCourses: () {
+          setState(() {
+            _selectedLesson = null;
+            _selectedCourse = null;
+          });
+        },
+      );
+    } else if (_selectedLesson != null) {
+      //Mostrar pantalla de texto
+      body = DojoLessonTextScreen(
+        courseTitle: _selectedCourse!,
+        lessonTitle: _selectedLesson!["title"]!,
+        lessonText: _selectedLesson!["text"]!,
+        onBack: () => setState(() => _selectedLesson = null),
+        onNext: () {
+          // Cambiar al modo "pregunta"
+          setState(() {
+            _selectedLesson = {
+              "type": "question",
+              "title": _selectedLesson!["title"]!,
+              "text": _selectedLesson!["text"]!,
+            };
+          });
+        },
+      );
+    } else if (_selectedCourse != null) {
+      body = DojoCourseScreen(
+        courseTitle: _selectedCourse!,
+        onBack: () => setState(() => _selectedCourse = null),
+        onLessonSelected: (lesson) {
+        setState(() => _selectedLesson = {
+          "type": "text",
+          "title": lesson["title"]!,
+          "text": lesson["text"]!,
+          });
+        },
+      );
+    } else {
+      final List<Widget> _screens = [
+        const Center(child: Text("Inicio")),
+        DojoScreen(
+          onCourseSelected: (courseTitle) {
+            setState(() => _selectedCourse = courseTitle);
+          },
+        ),
+        const Center(child: Text("Cursos")),
+        const Center(child: Text("Perfil")),
+      ];
+      body = _screens[_selectedIndex];
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFE1A8),
 
-       // Cabecera personalizada
+      // Cabecera
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: Container(
@@ -41,15 +139,12 @@ class _MainScreenState extends State<MainScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Foto de perfil
               const CircleAvatar(
                 radius: 25,
                 backgroundImage: AssetImage("assets/images/pfp/pfp4.png"),
                 backgroundColor: Colors.white,
               ),
               const SizedBox(width: 12),
-
-              // Texto de bienvenida y racha
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,9 +174,8 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
 
-      body: _screens[_selectedIndex],
+      body: body,
 
-      // Menú inferior
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF723D46),
         selectedItemColor: const Color(0xFFFFE1A8),
@@ -90,6 +184,8 @@ class _MainScreenState extends State<MainScreen> {
         currentIndex: _selectedIndex,
         onTap: (index) {
           setState(() {
+            _selectedCourse = null;
+            _selectedLesson = null; 
             _selectedIndex = index;
           });
         },
@@ -99,16 +195,16 @@ class _MainScreenState extends State<MainScreen> {
             label: "Inicio",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.school),
             label: "Dojo",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.list_alt),
             label: "Cursos",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Pefil",
+            icon: Icon(Icons.person),
+            label: "Perfil",
           ),
         ],
       ),
