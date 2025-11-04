@@ -55,11 +55,13 @@ flutter:
   
   assets:
     - assets/images/
-    - assets/images/loginScreen.svg
-    - assets/images/logoNoNombre.png
     - assets/images/onBoarding/onBng1.svg
     - assets/images/onBoarding/onBng2.svg
     - assets/images/onBoarding/onBng3.svg
+    - assets/images/pfp/pfp4.png
+    - assets/images/homeFiles/consejo.png
+    - assets/images/loginScreen.svg
+    - assets/images/logoNoNombre.png
     - assets/images/accountSetup/accSt1.svg
     - assets/images/accountSetup/accSt2.svg
     - assets/images/accountSetup/accSt3.svg
