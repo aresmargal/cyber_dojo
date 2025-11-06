@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_main_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_question_screen.dart';
+import 'package:cyber_dojo/screens/homeCourses/home_screen.dart';
+import 'package:cyber_dojo/screens/homeCourses/courses_screen.dart';
+import 'package:cyber_dojo/screens/homeCourses/course_detail_screen.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -14,7 +17,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 1; // 0 = home, 1 = dojo, etc.
+  int _selectedIndex = 0; // 0 = home, 1 = dojo, etc.
   String? _selectedCourse; // Guarda el curso actual abierto
   Map<String, String>? _selectedLesson; // Guarda la lección actual
 
@@ -105,17 +108,31 @@ class _MainScreenState extends State<MainScreen> {
         },
       );
     } else {
-      final List<Widget> _screens = [
-        const Center(child: Text("Inicio")),
-        DojoScreen(
-          onCourseSelected: (courseTitle) {
-            setState(() => _selectedCourse = courseTitle);
-          },
-        ),
-        const Center(child: Text("Cursos")),
-        const Center(child: Text("Perfil")),
-      ];
-      body = _screens[_selectedIndex];
+      Widget screen;
+
+  if (_selectedIndex == 0) {
+    screen = HomeScreen(
+      onCourseSelected: (courseTitle) {
+        setState(() => _selectedCourse = courseTitle);
+      },
+    );
+  } else if (_selectedIndex == 1) {
+    screen = DojoScreen(
+      onCourseSelected: (courseTitle) {
+        setState(() => _selectedCourse = courseTitle);
+      },
+    );
+  } else if (_selectedIndex == 2) {
+    screen = CoursesScreen(
+      onCourseSelected: (courseTitle) {
+        setState(() => _selectedCourse = courseTitle);
+      },
+    );
+  } else {
+    screen = const Center(child: Text("Perfil"));
+  }
+
+  body = screen;
     }
 
     return Scaffold(

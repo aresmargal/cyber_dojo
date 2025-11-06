@@ -2,7 +2,9 @@ import 'package:cyber_dojo/screens/homeCourses/course_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class CoursesScreen extends StatefulWidget {
-  const CoursesScreen({super.key});
+  final void Function(String) onCourseSelected;
+
+  const CoursesScreen({super.key, required this.onCourseSelected});
 
   @override
   State<CoursesScreen> createState() => _CoursesScreenState();

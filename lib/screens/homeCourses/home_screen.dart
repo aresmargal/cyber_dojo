@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final void Function(String) onCourseSelected;
+
+  const HomeScreen({super.key, required this.onCourseSelected});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -172,51 +174,56 @@ class _HomeScreenState extends State<HomeScreen> {
         itemCount: courses.length,
         itemBuilder: (context, index) {
           final course = courses[index];
-          return Container(
-            width: 140,
-            margin: const EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xB3472D30), // 70%
-              borderRadius: BorderRadius.circular(16),
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // TODO: Imagen del curso (cuadrado temporal)
-                Container(
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+          return GestureDetector(
+            onTap:() {
+              widget.onCourseSelected(course["title"]);
+            },
+            child: Container(
+              width: 140,
+              margin: const EdgeInsets.only(right: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xB3472D30), // 70%
+                borderRadius: BorderRadius.circular(16),
+              ),
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // TODO: Imagen del curso (cuadrado temporal)
+                  Container(
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  course["title"],
-                  style: const TextStyle(
-                    color: Color(0xFFFFE1A8),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                  const SizedBox(height: 10),
+                  Text(
+                    course["title"],
+                    style: const TextStyle(
+                      color: Color(0xFFFFE1A8),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  course["lessons"],
-                  style: const TextStyle(
-                    color: Color(0xFFFFE1A8),
-                    fontSize: 13,
+                  const SizedBox(height: 6),
+                  Text(
+                    course["lessons"],
+                    style: const TextStyle(
+                      color: Color(0xFFFFE1A8),
+                      fontSize: 13,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  course["belt"],
-                  style: const TextStyle(
-                    color: Color(0xFFFFE1A8),
-                    fontSize: 13,
+                  const SizedBox(height: 6),
+                  Text(
+                    course["belt"],
+                    style: const TextStyle(
+                      color: Color(0xFFFFE1A8),
+                      fontSize: 13,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
