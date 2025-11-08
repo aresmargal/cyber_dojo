@@ -8,7 +8,6 @@ import 'package:cyber_dojo/screens/homeCourses/home_screen.dart';
 import 'package:cyber_dojo/screens/homeCourses/courses_screen.dart';
 import 'package:cyber_dojo/screens/homeCourses/course_detail_screen.dart';
 
-
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -25,17 +24,13 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     // Elegir qué mostrar en el body
     Widget body;
-     if (_selectedCourse != null && _selectedLesson?["type"] == "question") {
+    if (_selectedCourse != null && _selectedLesson?["type"] == "question") {
       //Mostrar pantalla de pregunta
       body = DojoLessonQuestionScreen(
         courseTitle: _selectedCourse!,
         lessonTitle: _selectedLesson!["title"]!,
         questionText: "¿Cuál de las siguientes contraseñas es más segura?",
-        options: [
-          "12345678",
-          "Lyd!@2024",
-          "contraseña",
-        ],
+        options: ["12345678", "Lyd!@2024", "contraseña"],
         correctAnswerIndex: 1,
         onBack: () {
           // Volver al texto de la lección
@@ -59,17 +54,14 @@ class _MainScreenState extends State<MainScreen> {
           });
         },
       );
-    } else if (_selectedCourse != null && _selectedLesson?["type"] == "completed") {
-      body = DojoCourseCompletedScreen (
+    } else if (_selectedCourse != null &&
+        _selectedLesson?["type"] == "completed") {
+      body = DojoCourseCompletedScreen(
         courseTitle: _selectedCourse!,
         courseDescription:
             "Aprende las bases de la ciberseguridad mientras entrenas como un ninja digital.",
         courseImage: "",
-        medals: [
-          "",
-          "",
-          "",
-        ],
+        medals: ["", "", ""],
         onBackToCourses: () {
           setState(() {
             _selectedLesson = null;
@@ -100,39 +92,41 @@ class _MainScreenState extends State<MainScreen> {
         courseTitle: _selectedCourse!,
         onBack: () => setState(() => _selectedCourse = null),
         onLessonSelected: (lesson) {
-        setState(() => _selectedLesson = {
-          "type": "text",
-          "title": lesson["title"]!,
-          "text": lesson["text"]!,
-          });
+          setState(
+            () => _selectedLesson = {
+              "type": "text",
+              "title": lesson["title"]!,
+              "text": lesson["text"]!,
+            },
+          );
         },
       );
     } else {
       Widget screen;
 
-  if (_selectedIndex == 0) {
-    screen = HomeScreen(
-      onCourseSelected: (courseTitle) {
-        setState(() => _selectedCourse = courseTitle);
-      },
-    );
-  } else if (_selectedIndex == 1) {
-    screen = DojoScreen(
-      onCourseSelected: (courseTitle) {
-        setState(() => _selectedCourse = courseTitle);
-      },
-    );
-  } else if (_selectedIndex == 2) {
-    screen = CoursesScreen(
-      onCourseSelected: (courseTitle) {
-        setState(() => _selectedCourse = courseTitle);
-      },
-    );
-  } else {
-    screen = const Center(child: Text("Perfil"));
-  }
+      if (_selectedIndex == 0) {
+        screen = HomeScreen(
+          onCourseSelected: (courseTitle) {
+            setState(() => _selectedCourse = courseTitle);
+          },
+        );
+      } else if (_selectedIndex == 1) {
+        screen = DojoScreen(
+          onCourseSelected: (courseTitle) {
+            setState(() => _selectedCourse = courseTitle);
+          },
+        );
+      } else if (_selectedIndex == 2) {
+        screen = CoursesScreen(
+          onCourseSelected: (courseTitle) {
+            setState(() => _selectedCourse = courseTitle);
+          },
+        );
+      } else {
+        screen = const Center(child: Text("Perfil"));
+      }
 
-  body = screen;
+      body = screen;
     }
 
     return Scaffold(
@@ -142,7 +136,12 @@ class _MainScreenState extends State<MainScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: Container(
-          padding: const EdgeInsets.only(top: 50, left: 20, right: 16, bottom: 16),
+          padding: const EdgeInsets.only(
+            top: 50,
+            left: 20,
+            right: 16,
+            bottom: 16,
+          ),
           decoration: const BoxDecoration(
             color: Color(0xFF723D46),
             boxShadow: [
@@ -153,41 +152,52 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const CircleAvatar(
-                radius: 25,
-                backgroundImage: AssetImage("assets/images/pfp/pfp4.png"),
-                backgroundColor: Colors.white,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      "Bienvenido a tu Dojo, @LydiaNinja",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      "Racha de entrenamiento: 5 días 🔥",
-                      style: TextStyle(
-                        color: Color(0xFFFFE1A8),
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
+          child: _selectedIndex == 3
+            ? const Center(
+                child: Text(
+                  "Tu perfil",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const CircleAvatar(
+                    radius: 25,
+                    backgroundImage: AssetImage("assets/images/pfp/pfp4.png"),
+                    backgroundColor: Colors.white,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          "Bienvenido a tu Dojo, @LydiaNinja",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          "Racha de entrenamiento: 5 días 🔥",
+                          style: TextStyle(
+                            color: Color(0xFFFFE1A8),
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
         ),
       ),
 
@@ -202,27 +212,15 @@ class _MainScreenState extends State<MainScreen> {
         onTap: (index) {
           setState(() {
             _selectedCourse = null;
-            _selectedLesson = null; 
+            _selectedLesson = null;
             _selectedIndex = index;
           });
         },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Inicio",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: "Dojo",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt),
-            label: "Cursos",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Perfil",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
+          BottomNavigationBarItem(icon: Icon(Icons.school), label: "Dojo"),
+          BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: "Cursos"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
         ],
       ),
     );
