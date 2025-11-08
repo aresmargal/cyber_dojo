@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
   final VoidCallback onEditProfile; 
+  final VoidCallback onViewAllBadges; 
 
-  const ProfileScreen({super.key, required this.onEditProfile});
+  const ProfileScreen({super.key, required this.onEditProfile, required this.onViewAllBadges});
 
   @override
   Widget build(BuildContext context) {
@@ -118,25 +119,32 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 15),
 
           // --- Cinturones e Insignias ---
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text(
-                "Cinturones e Insignias",
-                style: TextStyle(
-                  color: Color(0xFF723D46),
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Cinturones e Insignias",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF472D30),
+                  ),
                 ),
-              ),
-              Text(
-                "Ver todos",
-                style: TextStyle(
-                  color: Color(0xFF472D30),
-                  fontWeight: FontWeight.w600,
+                GestureDetector(
+                  onTap: onViewAllBadges, 
+                  child: const Text(
+                    "Ver todos",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF723D46),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: 5),
 

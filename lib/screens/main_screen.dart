@@ -1,5 +1,6 @@
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_completed_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_text_screen.dart';
+import 'package:cyber_dojo/screens/profile/beltsAndBadges_screen.dart';
 import 'package:cyber_dojo/screens/profile/edit_profile_screen.dart';
 import 'package:cyber_dojo/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class _MainScreenState extends State<MainScreen> {
   String? _selectedCourse; // Guarda el curso actual abierto
   Map<String, String>? _selectedLesson; // Guarda la lección actual
   bool _editingProfile = false; //Datos de perfil en edición o no
+  bool _viewingBadges = false; //Bool para ver o no las medallas
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +106,9 @@ class _MainScreenState extends State<MainScreen> {
         },
       );
     } else {
-      Widget screen = const Center(child: Text("Pantalla no encontrada"),); //Valor por defecto por errores
+      Widget screen = const Center(
+        child: Text("Pantalla no encontrada"),
+      ); //Valor por defecto por errores
 
       if (_selectedIndex == 0) {
         screen = HomeScreen(
@@ -125,13 +129,28 @@ class _MainScreenState extends State<MainScreen> {
           },
         );
       } else if (_selectedIndex == 3) {
-        screen = _editingProfile
-      ? EditProfileScreen(onBack: () {
-          setState(() => _editingProfile = false);
-        })
-      : ProfileScreen(onEditProfile: () {
-          setState(() => _editingProfile = true);
-        });
+        if (_viewingBadges) {
+          screen = BeltsAndBadgesScreen(
+            onBack: () {
+              setState(() => _viewingBadges = false);
+            },
+          );
+        } else {
+          screen = _editingProfile
+              ? EditProfileScreen(
+                  onBack: () {
+                    setState(() => _editingProfile = false);
+                  },
+                )
+              : ProfileScreen(
+                  onEditProfile: () {
+                    setState(() => _editingProfile = true);
+                  },
+                  onViewAllBadges: () {
+                    setState(() => _viewingBadges = true);
+                  },
+                );
+        }
       }
 
       body = screen;
@@ -161,51 +180,51 @@ class _MainScreenState extends State<MainScreen> {
             ],
           ),
           child: _selectedIndex == 3
-            ? const Center(
-                child: Text(
-                  "Tu perfil",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )
-            : Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const CircleAvatar(
-                    radius: 25,
-                    backgroundImage: AssetImage("assets/images/pfp/pfp4.png"),
-                    backgroundColor: Colors.white,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "Bienvenido a tu Dojo, @LydiaNinja",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          "Racha de entrenamiento: 5 días 🔥",
-                          style: TextStyle(
-                            color: Color(0xFFFFE1A8),
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
+              ? const Center(
+                  child: Text(
+                    "Tu perfil",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ],
-              ),
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const CircleAvatar(
+                      radius: 25,
+                      backgroundImage: AssetImage("assets/images/pfp/pfp4.png"),
+                      backgroundColor: Colors.white,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            "Bienvenido a tu Dojo, @LydiaNinja",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            "Racha de entrenamiento: 5 días 🔥",
+                            style: TextStyle(
+                              color: Color(0xFFFFE1A8),
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
 
