@@ -1,3 +1,4 @@
+import 'package:cyber_dojo/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cyber_dojo/screens/auth/register_screen.dart';
@@ -24,10 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         title: const Text(
           "Iniciar sesión",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF723D46),
@@ -41,10 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 // Imagen superior
-                SvgPicture.asset(
-                  'assets/images/loginScreen.svg',
-                  height: 180,
-                ),
+                SvgPicture.asset('assets/images/loginScreen.svg', height: 180),
                 const SizedBox(height: 20),
 
                 // Texto motivador
@@ -110,13 +105,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Inicio de sesión exitoso 🎉"),
-                          ),
-                        );
-                      }
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MainScreen(),
+                        ),
+                      );
                     },
                     child: const Text(
                       "Iniciar sesión",
@@ -134,7 +128,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Texto inferior
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RegisterScreen(),
+                      ),
                     );
                   },
                   child: const Text(

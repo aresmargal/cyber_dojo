@@ -1,3 +1,4 @@
+import 'package:cyber_dojo/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -57,10 +58,10 @@ class _AccountSetupScreenState extends State<AccountSetupScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("¡Configuración completada!")),
-      );
-      // TODO: Guardar datos y navegar a Home
+      Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const MainScreen()),
+    );
     }
   }
 

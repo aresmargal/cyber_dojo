@@ -28,10 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         title: const Text(
           "Crear cuenta",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF723D46),
@@ -144,9 +141,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         Navigator.pushReplacement(
-  context,
-  MaterialPageRoute(builder: (context) => const AccountSetupScreen()),
-);
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AccountSetupScreen(),
+                          ),
+                        );
                       }
                     },
                     child: const Text(
@@ -166,7 +165,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
                       );
                     },
                     child: const Text(
