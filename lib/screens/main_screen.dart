@@ -1,12 +1,13 @@
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_completed_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_text_screen.dart';
+import 'package:cyber_dojo/screens/profile/edit_profile_screen.dart';
+import 'package:cyber_dojo/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_main_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_question_screen.dart';
 import 'package:cyber_dojo/screens/homeCourses/home_screen.dart';
 import 'package:cyber_dojo/screens/homeCourses/courses_screen.dart';
-import 'package:cyber_dojo/screens/homeCourses/course_detail_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -19,6 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0; // 0 = home, 1 = dojo, etc.
   String? _selectedCourse; // Guarda el curso actual abierto
   Map<String, String>? _selectedLesson; // Guarda la lección actual
+  bool _editingProfile = false; //Datos de perfil en edición o no
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +104,7 @@ class _MainScreenState extends State<MainScreen> {
         },
       );
     } else {
-      Widget screen;
+      Widget screen = const Center(child: Text("Pantalla no encontrada"),); //Valor por defecto por errores
 
       if (_selectedIndex == 0) {
         screen = HomeScreen(
@@ -122,8 +124,14 @@ class _MainScreenState extends State<MainScreen> {
             setState(() => _selectedCourse = courseTitle);
           },
         );
-      } else {
-        screen = const Center(child: Text("Perfil"));
+      } else if (_selectedIndex == 3) {
+        screen = _editingProfile
+      ? EditProfileScreen(onBack: () {
+          setState(() => _editingProfile = false);
+        })
+      : ProfileScreen(onEditProfile: () {
+          setState(() => _editingProfile = true);
+        });
       }
 
       body = screen;
