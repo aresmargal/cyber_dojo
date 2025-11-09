@@ -73,6 +73,14 @@ flutter:
     - assets/images/badges/cinturonAm.png
     - assets/images/badges/cinturonBlanco.png
     - assets/images/badges/cinturonVerde.png
+    - assets/images/icons/coursesIcon.png
+    - assets/images/icons/coursesIconFull.png
+    - assets/images/icons/dojoIcon.png
+    - assets/images/icons/dojoIconFull.png
+    - assets/images/icons/homeIcon.png
+    - assets/images/icons/homeIconFull.png
+    - assets/images/icons/profileIcon.png
+    - assets/images/icons/profileIconFull.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -232,8 +232,8 @@ class _MainScreenState extends State<MainScreen> {
 
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF723D46),
-        selectedItemColor: const Color(0xFFFFE1A8),
-        unselectedItemColor: Colors.white70,
+        selectedItemColor: const Color(0xffC9CBA3),
+        unselectedItemColor: const Color(0xffC9CBA3),
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: (index) {
@@ -243,11 +243,43 @@ class _MainScreenState extends State<MainScreen> {
             _selectedIndex = index;
           });
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
-          BottomNavigationBarItem(icon: Icon(Icons.school), label: "Dojo"),
-          BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: "Cursos"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
+        items: [
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              _selectedIndex == 0
+                  ? "assets/images/icons/homeIconFull.png"
+                  : "assets/images/icons/homeIcon.png",
+              height: 26,
+            ),
+            label: "Inicio",
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              _selectedIndex == 1
+                  ? "assets/images/icons/dojoIconFull.png"
+                  : "assets/images/icons/dojoIcon.png",
+              height: 32,
+            ),
+            label: "Dojo",
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              _selectedIndex == 2
+                  ? "assets/images/icons/coursesIconFull.png"
+                  : "assets/images/icons/coursesIcon.png",
+              height: 28,
+            ),
+            label: "Cursos",
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              _selectedIndex == 3
+                  ? "assets/images/icons/profileIconFull.png"
+                  : "assets/images/icons/profileIcon.png",
+              height: 26,
+            ),
+            label: "Perfil",
+          ),
         ],
       ),
     );
