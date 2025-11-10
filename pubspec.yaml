@@ -81,6 +81,7 @@ flutter:
     - assets/images/icons/homeIconFull.png
     - assets/images/icons/profileIcon.png
     - assets/images/icons/profileIconFull.png
+    - assets/images/buttonsIcons/ninjaIcon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

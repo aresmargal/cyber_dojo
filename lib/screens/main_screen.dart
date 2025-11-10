@@ -121,6 +121,9 @@ class _MainScreenState extends State<MainScreen> {
           onCourseSelected: (courseTitle) {
             setState(() => _selectedCourse = courseTitle);
           },
+          onExploreCourses: () {
+            setState(() => _selectedIndex = 2);
+          },
         );
       } else if (_selectedIndex == 2) {
         screen = CoursesScreen(
@@ -269,7 +272,7 @@ class _MainScreenState extends State<MainScreen> {
                   : "assets/images/icons/coursesIcon.png",
               height: 28,
             ),
-            label: "Cursos",
+            label: "Misiones",
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
