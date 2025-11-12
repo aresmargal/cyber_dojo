@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "243984305795",
+    "project_id": "cyberdojo-48c02",
+    "storage_bucket": "cyberdojo-48c02.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:243984305795:android:00e8405f07cd3b2fd355b6",
+        "android_client_info": {
+          "package_name": "com.example.cyber_dojo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0YK-VHGM7Xia6YmUIZzEVm9wiuqR8l-c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
