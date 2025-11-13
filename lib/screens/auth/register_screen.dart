@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/auth/login_screen.dart';
 import 'package:cyber_dojo/screens/accountSetup/account_setup_screen.dart';
@@ -20,6 +21,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
       TextEditingController();
 
   bool _isPasswordVisible = false;
+
+  Future<void> _registerUser() async {
+    final String name = _nameController.text.trim();
+    final String username = _usernameController.text.trim();
+    final String email = _emailController.text.trim();
+    final String password = _passwordController.text.trim();
+
+    try{
+      await FirebaseFirestore.instance.collection('users').add({
+        'alias': name,
+        'username': username,
+        'email' : email,
+        'password': password //TODO: SOLO PARA PRUEBAS
+      });
+
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AccountSetupScreen(),),);
+    } catch(e){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al crear usuario: $e')),);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,12 +161,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AccountSetupScreen(),
-                          ),
-                        );
+                        _registerUser();
                       }
                     },
                     child: const Text(
