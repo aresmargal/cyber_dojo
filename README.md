@@ -36,77 +36,12 @@ flutter run
 ---
 
 
-## Comparativa Mockups VS Aplicación Final
+## Desarrollo del FrontEnd: Comparativa Mockups VS Aplicación Final
 
-**-  SplashScreen & Onboarding Screens**
-  
-  Mockups
-  <img width="3941" height="1036" alt="splashYonBngScreen" src="https://github.com/user-attachments/assets/6268772b-6d32-4188-a4a7-9ba9161c9569" />
+Enlace Figma con la comparación https://www.figma.com/design/ni8arLnCXLH9yakolbevKy/CyberDojo?node-id=0-1&t=NUlZ6M8dnlUMd9nu-1 
 
-  Aplicación Final
-  <img width="1688" height="500" alt="splashYonbng" src="https://github.com/user-attachments/assets/88beea22-dca5-4d42-959c-7e6e279942bf" />
-  
+## Desarrollo del BackEnd
 
+Actualmente (13/11/2025) se está desarrollando la parte del back-end utilizando Firebase, específicamente Firestore Database. Se ha implementado la conexión con la colección `users`, que soporta las pantallas de login y registro (`loginScreen` y `registerScreen`). 
 
-  
-**-  Login & Sign Up**
-  
-  Mockups
-  <img width="3942" height="1051" alt="loginSignScreen" src="https://github.com/user-attachments/assets/d3d9c684-1518-4844-aae9-041454d219f5" />
-
-  Aplicación Final
-
-  
-<img width="481" height="462" alt="loginSignup" src="https://github.com/user-attachments/assets/51baca8b-dbab-4d6c-b515-73acb133ebd6" />
-
-
-
-
-**-  Account Setup**
-  
-  Mockups
-  <img width="3942" height="1038" alt="accountSetupScreen" src="https://github.com/user-attachments/assets/87348638-f2a4-43b5-ad69-141ba59d91d6" />
-
-
-  Aplicación Final
-
-  
-  <img width="669" height="451" alt="accountSetup" src="https://github.com/user-attachments/assets/10f53910-d13d-435a-99e4-ed9f9b3312c5" />
-  
-
-
-
-**-  Home, Dojo**
-  
-  Mockups
-  <img width="3942" height="1004" alt="homYDojoScreen" src="https://github.com/user-attachments/assets/f357c008-f65c-42b9-bfbf-ce44293e8884" />
-
-  Aplicación Final
-  <img width="932" height="462" alt="homoDojo" src="https://github.com/user-attachments/assets/2e268cb8-6da7-4cc8-8350-8f211d626700" />
-  
-------últimas 4 pantallas en desarrollo
-
-
-
-  **-  Courses**
-  
-  Mockups
-  <img width="3942" height="1008" alt="coursesScreen" src="https://github.com/user-attachments/assets/3704c8b8-135b-49c0-b1c2-71178b1a49e1" />
-
-  
-  Aplicación Final
-  
-  <img width="710" height="469" alt="courses" src="https://github.com/user-attachments/assets/5f6434a2-a320-4f9f-922b-0a4ad6e3a739" />
-
-
-
-
-  
-**-  Profile**
-  
-  Mockups
-  <img width="3942" height="956" alt="profileScreen" src="https://github.com/user-attachments/assets/d74a73da-d16c-4443-92ce-2e7cac485ffd" />
-
-  
-  Aplicación Final
-   -----en desarrollo
+El código relacionado se encuentra en la rama `mainFirebase`.
