@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cyber_dojo/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,6 +18,46 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _isPasswordVisible = false;
+
+  //Método para validar usuario
+  Future<void> _loginUser() async {
+    if(!_formKey.currentState!.validate()) return;
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    try{
+      final query = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+      if (query.docs.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Usuario no encontrado")),);
+        return;
+      }
+
+      final userData = query.docs.first.data();
+
+      //Comprobar contraeña TODO: SOLO PARA PRUEBAS, CAMBIAR A FIREBASE AUTHENTICATOR
+      if(userData['password'] != password) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Contraseña incorrecta")),);
+        return;
+      }
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const MainScreen(),
+        ),
+      );
+    } catch (e){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al iniciar sesion: $e")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,14 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MainScreen(),
-                        ),
-                      );
-                    },
+                    onPressed: _loginUser,
                     child: const Text(
                       "Iniciar sesión",
                       style: TextStyle(
