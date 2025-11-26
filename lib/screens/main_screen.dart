@@ -1,3 +1,4 @@
+import 'package:cyber_dojo/models/user.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_completed_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_text_screen.dart';
 import 'package:cyber_dojo/screens/profile/beltsAndBadges_screen.dart';
@@ -11,7 +12,8 @@ import 'package:cyber_dojo/screens/homeCourses/home_screen.dart';
 import 'package:cyber_dojo/screens/homeCourses/courses_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final UserModel user; 
+  const MainScreen({super.key, required this.user});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -146,11 +148,15 @@ class _MainScreenState extends State<MainScreen> {
                   },
                 )
               : ProfileScreen(
+                  user: widget.user,
                   onEditProfile: () {
                     setState(() => _editingProfile = true);
                   },
                   onViewAllBadges: () {
                     setState(() => _viewingBadges = true);
+                  },
+                  onLogout: () {
+                    //TODO: logout
                   },
                 );
         }

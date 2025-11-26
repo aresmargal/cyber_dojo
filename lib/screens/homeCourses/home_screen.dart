@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Widget reutilizable: lista horizontal de cursos
   Widget _buildCoursesList(List<Map<String, dynamic>> courses) {
     return SizedBox(
-      height: 184,
+      height: 192,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: courses.length,

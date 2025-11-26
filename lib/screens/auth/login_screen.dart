@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cyber_dojo/models/user.dart';
 import 'package:cyber_dojo/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -38,7 +39,8 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      final userData = query.docs.first.data();
+      final doc = query.docs.first;
+      final userData = doc.data();
 
       //Comprobar contraeña TODO: SOLO PARA PRUEBAS, CAMBIAR A FIREBASE AUTHENTICATOR
       if(userData['password'] != password) {
@@ -46,10 +48,13 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
+      // Crear el UserModel
+      final user = UserModel.fromMap(doc.id, userData);
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const MainScreen(),
+          builder: (context) => MainScreen(user: user),
         ),
       );
     } catch (e){

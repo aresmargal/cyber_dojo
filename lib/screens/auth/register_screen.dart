@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cyber_dojo/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/auth/login_screen.dart';
 import 'package:cyber_dojo/screens/accountSetup/account_setup_screen.dart';
@@ -29,14 +30,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final String password = _passwordController.text.trim();
 
     try{
-      await FirebaseFirestore.instance.collection('users').add({
+      final docRef = await FirebaseFirestore.instance.collection('users').add({
         'alias': name,
         'username': username,
         'email' : email,
-        'password': password //TODO: SOLO PARA PRUEBAS
+        'password': password,
+        'nivel': 'Blanco', // Nivel por defecto, se actualizará en AccountSetup
+        'badges': [],
+        'fotoPerfil': '',
+        'racha': 0,
+        'tiempoTotal': 0,
       });
 
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AccountSetupScreen(),),);
+      // Crear UserModel con ID del documento
+      final user = UserModel(
+        id: docRef.id,
+        alias: name,
+        username: username,
+        email: email,
+        password: password,
+        nivel: 'Blanco',
+        badges: [],
+        fotoPerfil: '',
+        racha: 0,
+        tiempoTotal: 0,
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => AccountSetupScreen(user: user),
+        ),
+      );
     } catch(e){
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al crear usuario: $e')),);
     }

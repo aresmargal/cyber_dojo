@@ -1,10 +1,13 @@
+import 'package:cyber_dojo/models/user.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
+  final UserModel user; 
   final VoidCallback onEditProfile; 
   final VoidCallback onViewAllBadges; 
+  final VoidCallback onLogout; 
 
-  const ProfileScreen({super.key, required this.onEditProfile, required this.onViewAllBadges});
+  const ProfileScreen({super.key, required this.user, required this.onEditProfile, required this.onViewAllBadges, required this.onLogout});
 
   @override
   Widget build(BuildContext context) {
@@ -14,16 +17,28 @@ class ProfileScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // --- Foto de perfil ---
-          const CircleAvatar(
+          CircleAvatar(
             radius: 60,
-            backgroundImage: AssetImage("assets/images/pfp/pfp4.png"),
             backgroundColor: Colors.white,
+            backgroundImage: (user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty)
+                ? NetworkImage(user.fotoPerfil!)
+                : null, // no mostrar imagen si es null
+            child: (user.fotoPerfil == null || user.fotoPerfil!.isEmpty)
+                ? Text(
+                    user.alias.substring(0, 1).toUpperCase(), // inicial del alias
+                    style: const TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF723D46),
+                    ),
+                  )
+                : null,
           ),
           const SizedBox(height: 16),
 
           // --- Nombre y correo ---
-          const Text(
-            "Lydia",
+          Text(
+            user.alias,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -32,8 +47,8 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 6),
 
-          const Text(
-            "lydia@ejemplo.com",
+          Text(
+            user.email,
             style: TextStyle(
               fontSize: 14,
               color: Color(0xFF723D46),
@@ -42,8 +57,8 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 6),
 
           // --- Cinturón ---
-          const Text(
-            "Cinturón: Blanco",
+          Text(
+            "Cinturón: ${user.nivel}",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -95,7 +110,7 @@ class ProfileScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             padding: const EdgeInsets.all(16),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -107,7 +122,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  "Entrenamiento total: 1 hora y 9 minutos", //TODO: Unir BBDD
+                  "Entrenamiento total: ${user.tiempoTotal}",
                   style: TextStyle(
                     color: Color(0xFFFFE1A8),
                     fontSize: 16,
@@ -173,7 +188,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        "Cinturón blanco",
+                        "C",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Color(0xFFFFE1A8),
@@ -183,16 +198,14 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                 );
-              }),
+              }).toList(),
             ),
           ),
           const SizedBox(height: 40),
 
           // --- Botón Cerrar Sesión ---
           ElevatedButton(
-            onPressed: () {
-              // TODO: Implementar cierre de sesión
-            },
+            onPressed: onLogout,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF472D30),
               shape: RoundedRectangleBorder(

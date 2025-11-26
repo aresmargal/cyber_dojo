@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cyber_dojo/models/user.dart';
 import 'package:cyber_dojo/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AccountSetupScreen extends StatefulWidget {
-  const AccountSetupScreen({super.key});
+  final UserModel user;
+
+  const AccountSetupScreen({super.key, required this.user});
 
   @override
   State<AccountSetupScreen> createState() => _AccountSetupScreenState();
@@ -44,12 +48,28 @@ class _AccountSetupScreenState extends State<AccountSetupScreen> {
   int currentPage = 0;
   final Map<int, int?> selectedOptions = {};
 
-  void _nextPage() {
+  Future<void> _nextPage() async {
     if (selectedOptions[currentPage] == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Selecciona una opción")),
       );
       return;
+    }
+
+    if (currentPage == 0) {
+      String nivel = 'Blanco';
+      final opt = selectedOptions[0];
+      if (opt == 0) nivel = 'Blanco';
+      else if (opt == 1 ) nivel = 'Amarillo';
+      else nivel = 'Verde';
+
+      // Actualizar Firestore
+      await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.user.id)
+        .update({'nivel': nivel});
+
+        widget.user.nivel = nivel; 
     }
 
     if (currentPage < setupPages.length - 1) {
@@ -60,7 +80,9 @@ class _AccountSetupScreenState extends State<AccountSetupScreen> {
     } else {
       Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const MainScreen()),
+      MaterialPageRoute(
+        builder: (_) => MainScreen(user: widget.user),
+      ),
     );
     }
   }
