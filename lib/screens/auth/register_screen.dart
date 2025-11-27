@@ -3,6 +3,7 @@ import 'package:cyber_dojo/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/auth/login_screen.dart';
 import 'package:cyber_dojo/screens/accountSetup/account_setup_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -29,11 +30,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final String email = _emailController.text.trim();
     final String password = _passwordController.text.trim();
 
-    try{
+    try {
       final docRef = await FirebaseFirestore.instance.collection('users').add({
         'alias': name,
         'username': username,
-        'email' : email,
+        'email': email,
         'password': password,
         'nivel': 'Blanco', // Nivel por defecto, se actualizará en AccountSetup
         'badges': [],
@@ -56,14 +57,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         tiempoTotal: 0,
       );
 
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("user_id", docRef.id);
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => AccountSetupScreen(user: user)),
+        );
+      }
+
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) => AccountSetupScreen(user: user),
-        ),
+        MaterialPageRoute(builder: (_) => AccountSetupScreen(user: user)),
       );
-    } catch(e){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al crear usuario: $e')),);
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error al crear usuario: $e')));
     }
   }
 

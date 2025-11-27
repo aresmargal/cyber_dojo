@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cyber_dojo/screens/auth/login_screen.dart';
 import 'package:cyber_dojo/screens/auth/register_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -23,7 +24,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       "image": "assets/images/onBoarding/onBng2.svg",
       "title": "Avanza de cinturón en cinturón",
-      "subtitle": "Supera lecciones y sube de rango en tu camino a la ciberseguridad",
+      "subtitle":
+          "Supera lecciones y sube de rango en tu camino a la ciberseguridad",
     },
     {
       "image": "assets/images/onBoarding/onBng3.svg",
@@ -91,11 +93,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool("onboarding_done", true);
+
                   Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const RegisterScreen()),
-    );
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterScreen(),
+                    ),
+                  );
                 },
                 child: const Text(
                   "Crear cuenta",
@@ -112,20 +119,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
             // Texto inferior con opción de iniciar sesión
             GestureDetector(
-              onTap: () {
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setBool("onboarding_done", true);
+
                 Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
               },
               child: const Padding(
                 padding: EdgeInsets.only(bottom: 20),
                 child: Text(
                   "¿Ya tienes una cuenta? Inicia sesión",
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(color: Colors.black54, fontSize: 16),
                 ),
               ),
             ),
@@ -141,7 +148,12 @@ class OnboardContent extends StatelessWidget {
   final String title;
   final String subtitle;
 
-  const OnboardContent({super.key, required this.image, required this.title, required this.subtitle});
+  const OnboardContent({
+    super.key,
+    required this.image,
+    required this.title,
+    required this.subtitle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -150,10 +162,7 @@ class OnboardContent extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-           SvgPicture.asset(
-            image,
-            height: 250,
-          ),
+          SvgPicture.asset(image, height: 250),
           const SizedBox(height: 40),
           Text(
             title,

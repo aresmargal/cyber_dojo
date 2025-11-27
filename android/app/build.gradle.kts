@@ -10,7 +10,7 @@ android {
     namespace = "com.example.cyber_dojo"
     //compileSdk = flutter.compileSdkVersion
     //ndkVersion = flutter.ndkVersion
-    compileSdk = 34
+    compileSdk = 35
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -30,7 +30,7 @@ android {
         //minSdk = flutter.minSdkVersion
         minSdk = 23
         //targetSdk = flutter.targetSdkVersion
-        targetSdk = 34
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }

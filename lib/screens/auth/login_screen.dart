@@ -4,6 +4,7 @@ import 'package:cyber_dojo/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cyber_dojo/screens/auth/register_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,20 +23,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //Método para validar usuario
   Future<void> _loginUser() async {
-    if(!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    try{
+    try {
       final query = await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: email)
-        .limit(1)
-        .get();
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
 
       if (query.docs.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Usuario no encontrado")),);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Usuario no encontrado")));
         return;
       }
 
@@ -43,24 +46,30 @@ class _LoginScreenState extends State<LoginScreen> {
       final userData = doc.data();
 
       //Comprobar contraeña TODO: SOLO PARA PRUEBAS, CAMBIAR A FIREBASE AUTHENTICATOR
-      if(userData['password'] != password) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Contraseña incorrecta")),);
+      if (userData['password'] != password) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Contraseña incorrecta")));
         return;
       }
 
       // Crear el UserModel
       final user = UserModel.fromMap(doc.id, userData);
 
-      Navigator.pushReplacement(
+      // Guardar el ID del usuario en SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("user_id", doc.id);
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen(user: user)),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
         context,
-        MaterialPageRoute(
-          builder: (context) => MainScreen(user: user),
-        ),
-      );
-    } catch (e){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error al iniciar sesion: $e")),
-      );
+      ).showSnackBar(SnackBar(content: Text("Error al iniciar sesion: $e")));
     }
   }
 
