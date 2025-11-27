@@ -10,8 +10,10 @@ class UserModel {
   final String? fotoPerfil;
   String? nivel;
   final List<int>? badges;
-  final int? racha;
-  final int? tiempoTotal;
+  int? racha;
+  int? tiempoTotal;
+  int? tiempoHoy;
+  DateTime? ultimoAcceso;
 
   UserModel({
     required this.id,
@@ -24,6 +26,8 @@ class UserModel {
     this.badges,
     this.racha,
     this.tiempoTotal,
+    this.tiempoHoy,
+    this.ultimoAcceso
   });
 
   // Constructor desde Map para Firestore
@@ -34,11 +38,13 @@ class UserModel {
       email: data['email'] ?? '',
       username: data['username'] ?? '',
       password: data['password'] ?? '',
-      fotoPerfil: data['fotoPerfil'], // ← CAMBIO: sin guion bajo
+      fotoPerfil: data['fotoPerfil'],
       nivel: data['nivel'],
       badges: data['badges'] != null ? List<int>.from(data['badges']) : [],
       racha: data['racha'] ?? 0,
-      tiempoTotal: data['tiempoTotal'] ?? 0, // ← CAMBIO: camelCase
+      tiempoTotal: data['tiempoTotal'] ?? 0, 
+      tiempoHoy: data['tiempoHoy'] ?? 0,
+      ultimoAcceso: (data['ultimoAcceso'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -55,11 +61,11 @@ class UserModel {
       'email': email,
       'username': username,
       'password': password,
-      'fotoPerfil': fotoPerfil, // ← CAMBIO: sin guion bajo
+      'fotoPerfil': fotoPerfil, 
       'nivel': nivel,
       'badges': badges ?? [],
       'racha': racha ?? 0,
-      'tiempoTotal': tiempoTotal ?? 0, // ← CAMBIO: camelCase
+      'tiempoTotal': tiempoTotal ?? 0, 
     };
   }
 }

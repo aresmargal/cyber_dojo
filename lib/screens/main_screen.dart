@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cyber_dojo/models/user.dart';
 import 'package:cyber_dojo/screens/auth/login_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_completed_screen.dart';
@@ -21,7 +22,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
   int _selectedIndex = 0; // 0 = home, 1 = dojo, etc.
   String? _selectedCourse; // Guarda el curso actual abierto
   Map<String, String>? _selectedLesson; // Guarda la lección actual
@@ -29,15 +30,121 @@ class _MainScreenState extends State<MainScreen> {
   bool _viewingBadges = false; //Bool para ver o no las medallas
   late UserModel _currentUser;
 
+  DateTime? _sessionStartTime; //Variable de tiempo en la app según sesión
+
   @override
   void initState() {
     super.initState();
     _currentUser = widget.user; // Inicializar con el usuario recibido
+
+    WidgetsBinding.instance.addObserver(this);
+    _sessionStartTime = DateTime.now();
+  }
+
+  //Manejo de tiempo en la app
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _saveSessionTime();
+    super.dispose();
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // El usuario regresa a la aplicación
+      print('AppLifecycleState: resumed. Iniciando contador.');
+      _sessionStartTime = DateTime.now();
+
+    } else if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+      // El usuario sale de la aplicación 
+      print('AppLifecycleState: paused/inactive. Guardando tiempo.');
+      _saveSessionTime();
+    }
+  }
+
+  void _saveSessionTime() async {
+    if (_sessionStartTime == null) return;
+    
+    final endTime = DateTime.now();
+    final duration = endTime.difference(_sessionStartTime!);
+    final elapsedSeconds = duration.inSeconds;
+
+    if (elapsedSeconds <= 0) return; // Evita guardar duraciones negativas o cero
+    
+    final userId = _currentUser.id;
+
+    try {
+      final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+      final doc = await userRef.get();
+      
+      // Obtener los valores actuales de BBDD
+      final currentTotalTime = (doc.data()?['tiempoTotal'] as int?) ?? 0;
+      final lastDailyAccess = (doc.data()?['ultimoAcceso'] as Timestamp?)?.toDate();
+      final currentDailyTime = (doc.data()?['tiempoHoy'] as int?) ?? 0;
+
+      // Tiempo total
+      final newTotalTime = currentTotalTime + elapsedSeconds;
+      // Tiempo de hoy
+      int newDailyTime = currentDailyTime;
+      // Comprueba si el último acceso fue un día diferente a hoy
+      final isNewDay = lastDailyAccess == null ||
+                       lastDailyAccess.year != endTime.year ||
+                       lastDailyAccess.month != endTime.month ||
+                       lastDailyAccess.day != endTime.day;
+
+      if (isNewDay) {
+        // Si es un día nuevo, el tiempo de hoy se reinicia
+        newDailyTime = elapsedSeconds;
+      } else {
+        newDailyTime += elapsedSeconds;
+      }
+      
+      await userRef.update({
+        'tiempoTotal': newTotalTime,
+        'tiempoHoy': newDailyTime, 
+        'ultimoAcceso': FieldValue.serverTimestamp(),
+      });
+      
+      // Reinicia el contador de inicio para la próxima sesión
+      _sessionStartTime = null; 
+
+      // Actualiza la variable de estado local
+      if (mounted) {
+          setState(() {
+             _currentUser.tiempoTotal = newTotalTime;
+             _currentUser.tiempoHoy = newDailyTime;
+             _currentUser.ultimoAcceso = endTime;
+          });
+      }
+
+    } catch (e) {
+      print('Error al guardar el tiempo de sesión: $e');
+    }
+  }
+
+  Future<void> _refreshUserData() async {
+  try {
+    final userId = _currentUser.id;
+    final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+    final doc = await userRef.get();
+    
+    if (doc.exists && mounted) {
+      final updatedUser = UserModel.fromFirestore(doc);
+      
+      setState(() {
+        _currentUser = updatedUser;
+        print("Datos del usuario refrescados desde Firestore.");
+      });
+    }
+  } catch (e) {
+    print("Error al refrescar datos del usuario: $e");
+  }
+}
+
+// Manejo de la informacion que se muestra en el body
+  @override
   Widget build(BuildContext context) {
-    // Elegir qué mostrar en el body
     Widget body;
     if (_selectedCourse != null && _selectedLesson?["type"] == "question") {
       //Mostrar pantalla de pregunta
@@ -263,7 +370,7 @@ class _MainScreenState extends State<MainScreen> {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            "Racha de entrenamiento: 5 días 🔥",
+                            "Racha de entrenamiento: ${_currentUser.racha ?? 0} días 🔥",
                             style: TextStyle(
                               color: Color(0xFFFFE1A8),
                               fontSize: 13,
@@ -291,6 +398,10 @@ class _MainScreenState extends State<MainScreen> {
             _selectedLesson = null;
             _selectedIndex = index;
           });
+
+          if(index == 3){
+            _refreshUserData();
+          }
         },
         items: [
           BottomNavigationBarItem(

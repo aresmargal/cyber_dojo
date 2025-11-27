@@ -2,12 +2,30 @@ import 'package:cyber_dojo/models/user.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
-  final UserModel user; 
-  final VoidCallback onEditProfile; 
-  final VoidCallback onViewAllBadges; 
-  final VoidCallback onLogout; 
+  final UserModel user;
+  final VoidCallback onEditProfile;
+  final VoidCallback onViewAllBadges;
+  final VoidCallback onLogout;
 
-  const ProfileScreen({super.key, required this.user, required this.onEditProfile, required this.onViewAllBadges, required this.onLogout});
+  const ProfileScreen({
+    super.key,
+    required this.user,
+    required this.onEditProfile,
+    required this.onViewAllBadges,
+    required this.onLogout,
+  });
+
+  //Manejo de tiempo en la app
+  String formatSeconds(int totalSeconds) {
+    final minutes = totalSeconds ~/ 60;
+    final seconds = totalSeconds % 60;
+
+    if (minutes > 0) {
+      return '$minutes min $seconds seg';
+    } else {
+      return '$seconds seg';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +38,15 @@ class ProfileScreen extends StatelessWidget {
           CircleAvatar(
             radius: 60,
             backgroundColor: Colors.white,
-            backgroundImage: (user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty)
+            backgroundImage:
+                (user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty)
                 ? NetworkImage(user.fotoPerfil!)
                 : null, // no mostrar imagen si es null
             child: (user.fotoPerfil == null || user.fotoPerfil!.isEmpty)
                 ? Text(
-                    user.alias.substring(0, 1).toUpperCase(), // inicial del alias
+                    user.alias
+                        .substring(0, 1)
+                        .toUpperCase(), // inicial del alias
                     style: const TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
@@ -49,10 +70,7 @@ class ProfileScreen extends StatelessWidget {
 
           Text(
             user.email,
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFF723D46),
-            ),
+            style: TextStyle(fontSize: 14, color: Color(0xFF723D46)),
           ),
           const SizedBox(height: 6),
 
@@ -75,15 +93,11 @@ class ProfileScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             ),
             child: const Text(
               "Editar perfil",
-              style: TextStyle(
-                color: Color(0xFFFFE1A8),
-                fontSize: 16,
-              ),
+              style: TextStyle(color: Color(0xFFFFE1A8), fontSize: 16),
             ),
           ),
           const SizedBox(height: 5),
@@ -110,22 +124,44 @@ class ProfileScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row( 
+              crossAxisAlignment: CrossAxisAlignment.center, 
               children: [
-                Text(
-                  "Entrenamiento de hoy: 23 minutos",
-                  style: TextStyle(
-                    color: Color(0xFFFFE1A8),
-                    fontSize: 16,
+                SizedBox( 
+                  width: 60, 
+                  child: Center( 
+                    child: Image.network(
+                      'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/buttons/reloj.png', 
+                      width: 50, 
+                      height: 50, 
+                      fit: BoxFit.contain, 
+                    ),
                   ),
                 ),
-                SizedBox(height: 8),
-                Text(
-                  "Entrenamiento total: ${user.tiempoTotal}",
-                  style: TextStyle(
-                    color: Color(0xFFFFE1A8),
-                    fontSize: 16,
+                const SizedBox(width: 16),
+
+                
+                Expanded( 
+                  child: Column( 
+                    crossAxisAlignment: CrossAxisAlignment.start, 
+                    mainAxisAlignment: MainAxisAlignment.center, 
+                    children: [
+                      Text(
+                        "Entrenamiento de hoy: ${formatSeconds(user.tiempoHoy ?? 0)}",
+                        style: TextStyle(
+                          color: Color(0xFFFFE1A8),
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 8), 
+                      Text(
+                        "Entrenamiento total: ${formatSeconds(user.tiempoTotal ?? 0)}",
+                        style: TextStyle(
+                          color: Color(0xFFFFE1A8),
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -148,7 +184,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: onViewAllBadges, 
+                  onTap: onViewAllBadges,
                   child: const Text(
                     "Ver todos",
                     style: TextStyle(
@@ -211,15 +247,11 @@ class ProfileScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
             ),
             child: const Text(
               "Cerrar sesión",
-              style: TextStyle(
-                color: Color(0xFFFFE1A8),
-                fontSize: 16,
-              ),
+              style: TextStyle(color: Color(0xFFFFE1A8), fontSize: 16),
             ),
           ),
           const SizedBox(height: 30),
