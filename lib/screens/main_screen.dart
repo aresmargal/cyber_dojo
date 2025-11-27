@@ -1,4 +1,5 @@
 import 'package:cyber_dojo/models/user.dart';
+import 'package:cyber_dojo/screens/auth/login_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_completed_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_text_screen.dart';
 import 'package:cyber_dojo/screens/profile/beltsAndBadges_screen.dart';
@@ -10,9 +11,10 @@ import 'package:cyber_dojo/screens/dojoScreens/dojo_course_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_question_screen.dart';
 import 'package:cyber_dojo/screens/homeCourses/home_screen.dart';
 import 'package:cyber_dojo/screens/homeCourses/courses_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
-  final UserModel user; 
+  final UserModel user;
   const MainScreen({super.key, required this.user});
 
   @override
@@ -25,6 +27,13 @@ class _MainScreenState extends State<MainScreen> {
   Map<String, String>? _selectedLesson; // Guarda la lección actual
   bool _editingProfile = false; //Datos de perfil en edición o no
   bool _viewingBadges = false; //Bool para ver o no las medallas
+  late UserModel _currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = widget.user; // Inicializar con el usuario recibido
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,20 +152,35 @@ class _MainScreenState extends State<MainScreen> {
         } else {
           screen = _editingProfile
               ? EditProfileScreen(
-                  onBack: () {
-                    setState(() => _editingProfile = false);
+                  user: _currentUser,
+                  onBack: (UserModel? updatedUser) {
+                    setState(() {
+                      if (updatedUser != null) {
+                        _currentUser = updatedUser;
+                      }
+                      _editingProfile = false;
+                    });
                   },
                 )
               : ProfileScreen(
-                  user: widget.user,
+                  user: _currentUser,
                   onEditProfile: () {
                     setState(() => _editingProfile = true);
                   },
                   onViewAllBadges: () {
                     setState(() => _viewingBadges = true);
                   },
-                  onLogout: () {
-                    //TODO: logout
+                  onLogout: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.remove("user_id"); // Borrar sesión guardada
+
+                    if (mounted) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        (route) => false, // Eliminar toda la pila de navegación
+                      );
+                    }
                   },
                 );
         }
@@ -202,19 +226,35 @@ class _MainScreenState extends State<MainScreen> {
               : Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 25,
-                      backgroundImage: AssetImage("assets/images/pfp/pfp4.png"),
                       backgroundColor: Colors.white,
+                      backgroundImage:
+                          (_currentUser.fotoPerfil != null &&
+                              _currentUser.fotoPerfil!.isNotEmpty)
+                          ? NetworkImage(_currentUser.fotoPerfil!)
+                          : null,
+                      child:
+                          (_currentUser.fotoPerfil == null ||
+                              _currentUser.fotoPerfil!.isEmpty)
+                          ? Text(
+                              _currentUser.alias.substring(0, 1).toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF723D46),
+                              ),
+                            )
+                          : null,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
-                            "Bienvenido a tu Dojo, @LydiaNinja",
-                            style: TextStyle(
+                            "Bienvenido a tu Dojo, @${_currentUser.username}",
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
