@@ -22,7 +22,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
+class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _selectedIndex = 0; // 0 = home, 1 = dojo, etc.
   String? _selectedCourse; // Guarda el curso actual abierto
   Map<String, String>? _selectedLesson; // Guarda la lección actual
@@ -55,9 +55,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
       // El usuario regresa a la aplicación
       print('AppLifecycleState: resumed. Iniciando contador.');
       _sessionStartTime = DateTime.now();
-
-    } else if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
-      // El usuario sale de la aplicación 
+    } else if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
+      // El usuario sale de la aplicación
       print('AppLifecycleState: paused/inactive. Guardando tiempo.');
       _saveSessionTime();
     }
@@ -65,22 +65,26 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
 
   void _saveSessionTime() async {
     if (_sessionStartTime == null) return;
-    
+
     final endTime = DateTime.now();
     final duration = endTime.difference(_sessionStartTime!);
     final elapsedSeconds = duration.inSeconds;
 
-    if (elapsedSeconds <= 0) return; // Evita guardar duraciones negativas o cero
-    
+    if (elapsedSeconds <= 0)
+      return; // Evita guardar duraciones negativas o cero
+
     final userId = _currentUser.id;
 
     try {
-      final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+      final userRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId);
       final doc = await userRef.get();
-      
+
       // Obtener los valores actuales de BBDD
       final currentTotalTime = (doc.data()?['tiempoTotal'] as int?) ?? 0;
-      final lastDailyAccess = (doc.data()?['ultimoAcceso'] as Timestamp?)?.toDate();
+      final lastDailyAccess = (doc.data()?['ultimoAcceso'] as Timestamp?)
+          ?.toDate();
       final currentDailyTime = (doc.data()?['tiempoHoy'] as int?) ?? 0;
 
       // Tiempo total
@@ -88,10 +92,11 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
       // Tiempo de hoy
       int newDailyTime = currentDailyTime;
       // Comprueba si el último acceso fue un día diferente a hoy
-      final isNewDay = lastDailyAccess == null ||
-                       lastDailyAccess.year != endTime.year ||
-                       lastDailyAccess.month != endTime.month ||
-                       lastDailyAccess.day != endTime.day;
+      final isNewDay =
+          lastDailyAccess == null ||
+          lastDailyAccess.year != endTime.year ||
+          lastDailyAccess.month != endTime.month ||
+          lastDailyAccess.day != endTime.day;
 
       if (isNewDay) {
         // Si es un día nuevo, el tiempo de hoy se reinicia
@@ -99,50 +104,51 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
       } else {
         newDailyTime += elapsedSeconds;
       }
-      
+
       await userRef.update({
         'tiempoTotal': newTotalTime,
-        'tiempoHoy': newDailyTime, 
+        'tiempoHoy': newDailyTime,
         'ultimoAcceso': FieldValue.serverTimestamp(),
       });
-      
+
       // Reinicia el contador de inicio para la próxima sesión
-      _sessionStartTime = null; 
+      _sessionStartTime = null;
 
       // Actualiza la variable de estado local
       if (mounted) {
-          setState(() {
-             _currentUser.tiempoTotal = newTotalTime;
-             _currentUser.tiempoHoy = newDailyTime;
-             _currentUser.ultimoAcceso = endTime;
-          });
+        setState(() {
+          _currentUser.tiempoTotal = newTotalTime;
+          _currentUser.tiempoHoy = newDailyTime;
+          _currentUser.ultimoAcceso = endTime;
+        });
       }
-
     } catch (e) {
       print('Error al guardar el tiempo de sesión: $e');
     }
   }
 
   Future<void> _refreshUserData() async {
-  try {
-    final userId = _currentUser.id;
-    final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
-    final doc = await userRef.get();
-    
-    if (doc.exists && mounted) {
-      final updatedUser = UserModel.fromFirestore(doc);
-      
-      setState(() {
-        _currentUser = updatedUser;
-        print("Datos del usuario refrescados desde Firestore.");
-      });
-    }
-  } catch (e) {
-    print("Error al refrescar datos del usuario: $e");
-  }
-}
+    try {
+      final userId = _currentUser.id;
+      final userRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId);
+      final doc = await userRef.get();
 
-// Manejo de la informacion que se muestra en el body
+      if (doc.exists && mounted) {
+        final updatedUser = UserModel.fromFirestore(doc);
+
+        setState(() {
+          _currentUser = updatedUser;
+          print("Datos del usuario refrescados desde Firestore.");
+        });
+      }
+    } catch (e) {
+      print("Error al refrescar datos del usuario: $e");
+    }
+  }
+
+  // Manejo de la informacion que se muestra en el body
   @override
   Widget build(BuildContext context) {
     Widget body;
@@ -255,6 +261,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
             onBack: () {
               setState(() => _viewingBadges = false);
             },
+            userBadges: _currentUser.badges?.cast<int>() ?? [],
+            user: _currentUser
           );
         } else {
           screen = _editingProfile
@@ -399,7 +407,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver{
             _selectedIndex = index;
           });
 
-          if(index == 3){
+          if (index == 3) {
             _refreshUserData();
           }
         },

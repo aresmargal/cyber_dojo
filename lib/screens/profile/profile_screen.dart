@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cyber_dojo/models/badge.dart';
 import 'package:cyber_dojo/models/user.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class ProfileScreen extends StatelessWidget {
   final UserModel user;
@@ -14,6 +17,88 @@ class ProfileScreen extends StatelessWidget {
     required this.onViewAllBadges,
     required this.onLogout,
   });
+
+  //Obtener insignias del user
+  Future<List<BadgeModel>> _fetchBadges() async {
+    final snapshot = await FirebaseFirestore.instance.collection('badge').get();
+
+    final allBadges = snapshot.docs
+        .map((doc) => BadgeModel.fromFirestore(doc))
+        .toList();
+
+    final userBadgeIds = user.badges?.cast<int>() ?? [];
+    final unlockedBadges = allBadges
+        .where((badge) => userBadgeIds.contains(badge.id))
+        .toList();
+    final lockedBadges = allBadges
+        .where((badge) => !userBadgeIds.contains(badge.id))
+        .toList();
+
+    return [...unlockedBadges, ...lockedBadges];
+  }
+
+  //Dibujar insignia
+  Widget _buildProfileBadgeItem(BadgeModel badge, bool isUnlocked) {
+    final backgroundColor = isUnlocked
+        ? const Color(0xB3472D30) 
+        : const Color(0x69472D30);
+
+    return Container(
+      width: 100, 
+      margin: const EdgeInsets.only(right: 16),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 4,
+            offset: Offset(1, 2),
+          ),
+        ],
+      ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Imagen de la insignia
+              Container(
+                height: 50, 
+                width: 50,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  image: DecorationImage(
+                    image: NetworkImage(badge.urlImagen),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              // Nombre de la insignia
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: Text(
+                  badge.nombre,
+                  textAlign: TextAlign.center,
+                  maxLines: 1, 
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Color(0xFFFFE1A8),
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (!isUnlocked)
+            const Icon(Icons.lock, size: 28, color: Colors.black54),
+        ],
+      ),
+    );
+  }
 
   //Manejo de tiempo en la app
   String formatSeconds(int totalSeconds) {
@@ -139,7 +224,6 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-
                 
                 Expanded( 
                   child: Column( 
@@ -199,43 +283,39 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 5),
 
-          SizedBox(
-            height: 120,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: List.generate(3, (index) {
-                return Container(
-                  width: 100,
-                  margin: const EdgeInsets.only(right: 16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xB3472D30),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 60,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.white24,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        "C",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFFFFE1A8),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
+          FutureBuilder<List<BadgeModel>>(
+            future: _fetchBadges(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(
+                  height: 120, // Mantener el espacio mientras carga
+                  child: Center(
+                    child: CircularProgressIndicator(color: Color(0xFF723D46)),
                   ),
                 );
-              }).toList(),
-            ),
+              }
+
+              final allAchievements = snapshot.data!;
+              
+              // Mostrar las primeras 4
+              final itemsToShow = min(allAchievements.length, 4);
+              final visibleAchievements = allAchievements.sublist(0, itemsToShow);
+              final userBadgesIds = user.badges?.cast<int>() ?? [];
+
+              return SizedBox(
+                height: 120,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: visibleAchievements.length,
+                  itemBuilder: (context, index) {
+                    final item = visibleAchievements[index];
+                    final bool unlocked = userBadgesIds.contains(item.id);
+
+                    return _buildProfileBadgeItem(item, unlocked);
+                  },
+                ),
+              );
+            },
           ),
           const SizedBox(height: 40),
 
