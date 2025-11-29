@@ -1,22 +1,74 @@
-import 'package:cyber_dojo/screens/homeCourses/courses_screen.dart';
-import 'package:cyber_dojo/screens/main_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cyber_dojo/models/course.dart';
+import 'package:cyber_dojo/models/user.dart';
 import 'package:flutter/material.dart';
 
-class DojoScreen extends StatelessWidget {
+class DojoScreen extends StatefulWidget {
   final void Function(String) onCourseSelected;
   final VoidCallback onExploreCourses;
+  final UserModel currentUser;
 
-  const DojoScreen({super.key, required this.onCourseSelected, required this.onExploreCourses});
+  const DojoScreen({
+    super.key,
+    required this.onCourseSelected,
+    required this.onExploreCourses,
+    required this.currentUser,
+  });
+
+  @override
+  State<DojoScreen> createState() => _DojoScreenState();
+}
+
+class _DojoScreenState extends State<DojoScreen> {
+  // Función para obtener los cursos activos del usuario
+  Stream<List<Map<String, dynamic>>> _getActiveCoursesStream() async* {
+    final activeCourseIds =
+        widget.currentUser.progresoCursos?.keys.toList() ?? [];
+
+    if (activeCourseIds.isEmpty) {
+      yield []; // Si no hay cursos activos, devolver lista vacía
+      return;
+    }
+
+    // Buscar los detalles de todos los cursos en paralelo
+    final List<Future<DocumentSnapshot<Map<String, dynamic>>>> courseFutures =
+        activeCourseIds
+            .map(
+              (id) =>
+                  FirebaseFirestore.instance.collection('curso').doc(id).get(),
+            )
+            .toList();
+
+    final List<DocumentSnapshot<Map<String, dynamic>>> courseDocs =
+        await Future.wait(courseFutures);
+
+    final List<Map<String, dynamic>> coursesData = [];
+    for (var doc in courseDocs) {
+      if (doc.exists) {
+        final courseModel = CourseModel.fromFirestore(doc);
+        final courseId = doc.id;
+        final progress = widget.currentUser.progresoCursos![courseId];
+
+        // Obtener el estado y el progreso
+        final completedLessons =
+            progress?['lecciones_completadas'] as int? ?? 0;
+        final isCompleted = progress?['completado'] as bool? ?? false;
+
+        // Formatear los datos
+        coursesData.add({
+          "title": courseModel.titulo,
+          "lessons": "${courseModel.numLecciones}/$completedLessons",
+          "belt": courseModel.nivel,
+          "isCompleted": isCompleted,
+        });
+      }
+    }
+
+    yield coursesData;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> activeCourses = [
-      {"title": "Fundamentos de Ciberseguridad", "lessons": "12/20","belt": "Blanco",},
-      {"title": "Protege tu Red Wi-Fi", "lessons": "8/15", "belt": "Amarillo"},
-      {"title": "Navegación Segura", "lessons": "5/10", "belt": "Naranja"},
-      {"title": "Phishing y Contraseñas", "lessons": "9/12", "belt": "Verde"},
-    ];
-
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -32,67 +84,111 @@ class DojoScreen extends StatelessWidget {
               ),
             ),
           ),
-          Flexible(
-            fit: FlexFit.loose,
-            child: GridView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 0.8,
-              ),
-              itemCount: activeCourses.length,
-              itemBuilder: (context, index) {
-                final course = activeCourses[index];
-                return GestureDetector(
-                  onTap: () => onCourseSelected(course["title"]!),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xB3472D30),
-                      borderRadius: BorderRadius.circular(16),
+
+          // StreamBuilder para cargar los datos
+          Expanded(
+            child: StreamBuilder<List<Map<String, dynamic>>>(
+              stream: _getActiveCoursesStream(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  print('Error al cargar los cursos: ${snapshot.error}');
+                  return const Center(
+                    child: Text("Error al cargar los cursos."),
+                  );
+                }
+
+                // Si no hay datos (cursos activos)
+                final activeCourses = snapshot.data ?? [];
+                if (activeCourses.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "¡No tienes misiones en curso! \nVe a 'Misiones' para empezar.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFF472D30).withOpacity(0.7),
+                        fontSize: 16,
+                      ),
                     ),
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 70,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          course["title"]!,
-                          style: const TextStyle(
-                            color: Color(0xFFFFE1A8),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          "${course["lessons"]} lecciones",
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                          ),
-                        ),
-                        Text(
-                          "Cinturón: ${course["belt"]}",
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
+                  );
+                }
+
+                return GridView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 0.8,
                   ),
+                  itemCount: activeCourses.length,
+                  itemBuilder: (context, index) {
+                    final course = activeCourses[index];
+                    final isCompleted = course['isCompleted'] as bool;
+
+                    final progressDisplay = isCompleted
+                        ? "Finalizado"
+                        : "${course["lessons"]} lecciones";
+                    final progressColor = isCompleted
+                        ? Colors.greenAccent
+                        : Colors.white70;
+
+                    return GestureDetector(
+                      onTap: () => widget.onCourseSelected(course["title"]!),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xB3472D30),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 70,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              course["title"]!,
+                              style: const TextStyle(
+                                color: Color(0xFFFFE1A8),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              progressDisplay,
+                              style: TextStyle(
+                                color: progressColor,
+                                fontSize: 12,
+                                fontWeight: isCompleted
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                            Text(
+                              "Cinturón: ${course["belt"]}",
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -103,7 +199,7 @@ class DojoScreen extends StatelessWidget {
           //Botón "explorar más misiones"
           InkWell(
             borderRadius: BorderRadius.circular(12),
-            onTap: onExploreCourses,
+            onTap: widget.onExploreCourses,
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
@@ -121,8 +217,8 @@ class DojoScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    "assets/images/buttonsIcons/ninjaIcon.png", 
+                  Image.network(
+                    "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/buttons/ninjaIcon.png",
                     height: 26,
                   ),
                   const SizedBox(width: 12),

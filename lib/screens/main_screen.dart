@@ -257,6 +257,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           onExploreCourses: () {
             setState(() => _selectedIndex = 2);
           },
+          currentUser: _currentUser,
         );
       } else if (_selectedIndex == 2) {
         screen = CoursesScreen(
