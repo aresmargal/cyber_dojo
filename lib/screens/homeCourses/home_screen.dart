@@ -15,12 +15,14 @@ class HomeScreen extends StatefulWidget {
   final void Function(String) onCourseSelected;
   final UserModel currentUser;
   final VoidCallback onExploreCourses;
+  final VoidCallback onGoToDojo;
 
   const HomeScreen({
     super.key,
     required this.onCourseSelected,
     required this.currentUser,
     required this.onExploreCourses,
+    required this.onGoToDojo,
   });
 
   @override
@@ -62,13 +64,9 @@ class _HomeScreenState extends State<HomeScreen> {
         if (userProgress.containsKey(courseId)) {
           // Si el curso tiene progreso (iniciado o completado), va a currentCourses
           currentCourses.add(course);
-          print(
-            "Curso ${course.titulo} añadido a 'En Curso' (con progreso/completado).",
-          );
         } else {
           // Si no tiene progreso registrado, es un curso nuevo
           newCourses.add(course);
-          print("Curso ${course.titulo} añadido a 'Nuevas Misiones'.");
         }
       }
 
@@ -200,6 +198,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Widget reutilizable: título + “ver todos”
   Widget _buildSectionTitle(String title, String action) {
+    // Determinar la acción basándose en el título de la sección
+    VoidCallback? onTapAction;
+
+    if (title == "Nuevas misiones") {
+      onTapAction =
+          widget.onExploreCourses;
+    } else if (title == "Tu entrenamiento en curso") {
+      onTapAction = widget.onGoToDojo;
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -212,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         TextButton(
-          onPressed: action == "Ver todos" ? widget.onExploreCourses : () {},
+          onPressed: onTapAction,
           child: Text(
             action,
             style: const TextStyle(
@@ -240,8 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final courseId = course.idCurso;
 
           // Obtener el mapa de progreso específico para este curso
-          final courseProgress =
-              userProgress[courseId] as Map<String, dynamic>?;
+          final courseProgress = userProgress[courseId];
 
           // Determinar el estado del curso
           final isCompleted = courseProgress != null

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cyber_dojo/models/block.dart';
 import 'package:cyber_dojo/models/user.dart';
 import 'package:cyber_dojo/screens/auth/login_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_completed_screen.dart';
@@ -245,6 +244,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           currentUser: _currentUser,
           onExploreCourses: () {
             setState(() => _selectedIndex = 2);
+          },
+          onGoToDojo: () {
+            setState(() => _selectedIndex = 1);
           },
         );
       } else if (_selectedIndex == 1) {
