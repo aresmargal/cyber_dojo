@@ -7,7 +7,6 @@ import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_text_screen.dart';
 import 'package:cyber_dojo/screens/profile/beltsAndBadges_screen.dart';
 import 'package:cyber_dojo/screens/profile/edit_profile_screen.dart';
 import 'package:cyber_dojo/screens/profile/profile_screen.dart';
-import 'package:cyber_dojo/services/FirestoreService.dart';
 import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_main_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_screen.dart';
