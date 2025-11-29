@@ -7,17 +7,20 @@ import 'package:flutter/material.dart';
 class CourseData {
   final List<CourseModel> currentCourses;
   final List<CourseModel> newCourses;
+
   CourseData(this.currentCourses, this.newCourses);
 }
 
 class HomeScreen extends StatefulWidget {
   final void Function(String) onCourseSelected;
   final UserModel currentUser;
+  final VoidCallback onExploreCourses;
 
   const HomeScreen({
     super.key,
     required this.onCourseSelected,
     required this.currentUser,
+    required this.onExploreCourses,
   });
 
   @override
@@ -46,14 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
           .map((doc) => CourseModel.fromFirestore(doc))
           .toList();
 
-          //debug
-          print("Total de cursos obtenidos: ${allCourses.length}");
-
       // Obtener el progreso del usuario
       final userProgress = widget.currentUser.progresoCursos ?? {};
-
-      //debug
-          print("Total de progreso: ${userProgress.keys}");
 
       List<CourseModel> currentCourses = [];
       List<CourseModel> newCourses = [];
@@ -63,12 +60,11 @@ class _HomeScreenState extends State<HomeScreen> {
         final courseId = course.idCurso;
 
         if (userProgress.containsKey(courseId)) {
-          // Si el curso tiene progreso y NO está completado
-          final isCompleted = userProgress[courseId]?['completado'] ?? false;
-          if (!isCompleted) {
-            currentCourses.add(course);
-            print("Curso ${course.titulo} añadido a 'En Curso'.");
-          }
+          // Si el curso tiene progreso (iniciado o completado), va a currentCourses
+          currentCourses.add(course);
+          print(
+            "Curso ${course.titulo} añadido a 'En Curso' (con progreso/completado).",
+          );
         } else {
           // Si no tiene progreso registrado, es un curso nuevo
           newCourses.add(course);
@@ -76,16 +72,12 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
 
-      print("Cursos finales 'En Curso': ${currentCourses.length}");
-    print("Cursos finales 'Nuevas Misiones': ${newCourses.length}");
-
       // Devolver los datos clasificados
       return CourseData(
         currentCourses.take(3).toList(),
         newCourses.take(3).toList(),
       );
     } catch (e) {
-      print("Error fetching or filtering courses: $e");
       // Devolver listas vacías en caso de error
       return CourseData([], []);
     }
@@ -220,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: action == "Ver todos" ? widget.onExploreCourses : () {},
           child: Text(
             action,
             style: const TextStyle(
@@ -236,6 +228,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Widget reutilizable: lista horizontal de cursos
   Widget _buildCoursesList(List<CourseModel> courses) {
+    final userProgress = widget.currentUser.progresoCursos ?? {};
+
     return SizedBox(
       height: 192,
       child: ListView.builder(
@@ -243,6 +237,21 @@ class _HomeScreenState extends State<HomeScreen> {
         itemCount: courses.length,
         itemBuilder: (context, index) {
           final course = courses[index];
+          final courseId = course.idCurso;
+
+          // Obtener el mapa de progreso específico para este curso
+          final courseProgress =
+              userProgress[courseId] as Map<String, dynamic>?;
+
+          // Determinar el estado del curso
+          final isCompleted = courseProgress != null
+              ? courseProgress['completado'] ?? false
+              : false;
+
+          final progressDisplay = isCompleted
+              ? "Finalizado"
+              : "Nivel: ${course.nivel}"; // Si no está completado, muestra el nivel
+
           return GestureDetector(
             onTap: () {
               widget.onCourseSelected(course.titulo);
@@ -285,10 +294,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    "Nivel: ${course.nivel}",
-                    style: const TextStyle(
-                      color: Color(0xFFFFE1A8),
+                    progressDisplay, // Usamos la variable determinada
+                    style: TextStyle(
+                      color: isCompleted
+                          ? Colors.greenAccent
+                          : const Color(
+                              0xFFFFE1A8,
+                            ), // Color distinto si está finalizado
                       fontSize: 13,
+                      fontWeight: isCompleted
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
                 ],

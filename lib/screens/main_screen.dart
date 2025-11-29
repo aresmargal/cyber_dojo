@@ -243,6 +243,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
             setState(() => _selectedCourse = courseTitle);
           },
           currentUser: _currentUser,
+          onExploreCourses: () {
+            setState(() => _selectedIndex = 2);
+          },
         );
       } else if (_selectedIndex == 1) {
         screen = DojoScreen(
@@ -258,6 +261,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           onCourseSelected: (courseTitle) {
             setState(() => _selectedCourse = courseTitle);
           },
+          currentUser: _currentUser,
         );
       } else if (_selectedIndex == 3) {
         if (_viewingBadges) {
