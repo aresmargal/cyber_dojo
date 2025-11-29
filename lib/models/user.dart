@@ -6,6 +6,7 @@ class UserModel {
   final String email;
   final String username;
   final String password;
+  final Map<String, Map<String, dynamic>>? progresoCursos;
   
   final String? fotoPerfil;
   String? nivel;
@@ -27,11 +28,19 @@ class UserModel {
     this.racha,
     this.tiempoTotal,
     this.tiempoHoy,
-    this.ultimoAcceso
+    this.ultimoAcceso,
+    this.progresoCursos
   });
 
   // Constructor desde Map para Firestore
   factory UserModel.fromMap(String id, Map<String, dynamic> data) {
+    // Conversión segura del campo 'progreso_cursos'
+    final Map<String, dynamic>? rawProgress = data['progreso_cursos'] as Map<String, dynamic>?;
+
+    final Map<String, Map<String, dynamic>>? progressMap = rawProgress?.map(
+      (key, value) => MapEntry(key, value as Map<String, dynamic>),
+    );
+
     return UserModel(
       id: id,
       alias: data['alias'] ?? '',
@@ -45,6 +54,7 @@ class UserModel {
       tiempoTotal: data['tiempoTotal'] ?? 0, 
       tiempoHoy: data['tiempoHoy'] ?? 0,
       ultimoAcceso: (data['ultimoAcceso'] as Timestamp?)?.toDate(),
+      progresoCursos: progressMap,  
     );
   }
 
@@ -66,6 +76,7 @@ class UserModel {
       'badges': badges ?? [],
       'racha': racha ?? 0,
       'tiempoTotal': tiempoTotal ?? 0, 
+      'progreso_cursos': progresoCursos
     };
   }
 }

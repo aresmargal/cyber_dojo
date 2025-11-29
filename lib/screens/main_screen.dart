@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cyber_dojo/models/block.dart';
 import 'package:cyber_dojo/models/user.dart';
 import 'package:cyber_dojo/screens/auth/login_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_completed_screen.dart';
@@ -6,6 +7,7 @@ import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_text_screen.dart';
 import 'package:cyber_dojo/screens/profile/beltsAndBadges_screen.dart';
 import 'package:cyber_dojo/screens/profile/edit_profile_screen.dart';
 import 'package:cyber_dojo/screens/profile/profile_screen.dart';
+import 'package:cyber_dojo/services/FirestoreService.dart';
 import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_main_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_screen.dart';
@@ -29,6 +31,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   bool _editingProfile = false; //Datos de perfil en edición o no
   bool _viewingBadges = false; //Bool para ver o no las medallas
   late UserModel _currentUser;
+
+  
 
   DateTime? _sessionStartTime; //Variable de tiempo en la app según sesión
 
@@ -239,6 +243,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           onCourseSelected: (courseTitle) {
             setState(() => _selectedCourse = courseTitle);
           },
+          currentUser: _currentUser,
         );
       } else if (_selectedIndex == 1) {
         screen = DojoScreen(

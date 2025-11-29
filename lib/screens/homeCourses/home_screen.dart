@@ -1,138 +1,207 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cyber_dojo/models/course.dart';
+import 'package:cyber_dojo/models/user.dart';
 import 'package:flutter/material.dart';
+
+// Clase de ayuda para el FutureBuilder, ya que contiene dos listas
+class CourseData {
+  final List<CourseModel> currentCourses;
+  final List<CourseModel> newCourses;
+  CourseData(this.currentCourses, this.newCourses);
+}
 
 class HomeScreen extends StatefulWidget {
   final void Function(String) onCourseSelected;
+  final UserModel currentUser;
 
-  const HomeScreen({super.key, required this.onCourseSelected});
+  const HomeScreen({
+    super.key,
+    required this.onCourseSelected,
+    required this.currentUser,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-//TODO: Conectar con BBDD
-
 class _HomeScreenState extends State<HomeScreen> {
-  final String username = "@LydiaNinja";
-  final int trainingStreak = 5;
+  late Future<CourseData> _coursesFuture;
 
-  // Datos de ejemplo
-  final List<Map<String, dynamic>> currentCourses = [
-    {
-      "title": "Fundamentos de la red",
-      "lessons": "15/20 lecciones",
-      "belt": "Cinturón: Blanco",
-    },
-    {
-      "title": "Defensa básica",
-      "lessons": "8/15 lecciones",
-      "belt": "Cinturón: Amarillo",
-    },
-    {
-      "title": "Amenazas comunes",
-      "lessons": "10/18 lecciones",
-      "belt": "Cinturón: Verde",
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _coursesFuture = _fetchAndFilterCourses();
+  }
 
-  final List<Map<String, dynamic>> newCourses = [
-    {
-      "title": "Cifrado y contraseñas",
-      "lessons": "0/10 lecciones",
-      "belt": "Cinturón: Blanco",
-    },
-    {
-      "title": "Seguridad móvil",
-      "lessons": "0/12 lecciones",
-      "belt": "Cinturón: Blanco",
-    },
-    {
-      "title": "Internet seguro",
-      "lessons": "0/9 lecciones",
-      "belt": "Cinturón: Blanco",
-    },
-  ];
+  // Función asíncrona para obtener y clasificar los cursos
+  Future<CourseData> _fetchAndFilterCourses() async {
+    try {
+      // Obtener todos los cursos de Firestore
+      final courseSnapshot = await FirebaseFirestore.instance
+          .collection('curso')
+          .orderBy('titulo')
+          .get();
+
+      final allCourses = courseSnapshot.docs
+          .map((doc) => CourseModel.fromFirestore(doc))
+          .toList();
+
+          //debug
+          print("Total de cursos obtenidos: ${allCourses.length}");
+
+      // Obtener el progreso del usuario
+      final userProgress = widget.currentUser.progresoCursos ?? {};
+
+      //debug
+          print("Total de progreso: ${userProgress.keys}");
+
+      List<CourseModel> currentCourses = [];
+      List<CourseModel> newCourses = [];
+
+      // Clasificar los cursos
+      for (var course in allCourses) {
+        final courseId = course.idCurso;
+
+        if (userProgress.containsKey(courseId)) {
+          // Si el curso tiene progreso y NO está completado
+          final isCompleted = userProgress[courseId]?['completado'] ?? false;
+          if (!isCompleted) {
+            currentCourses.add(course);
+            print("Curso ${course.titulo} añadido a 'En Curso'.");
+          }
+        } else {
+          // Si no tiene progreso registrado, es un curso nuevo
+          newCourses.add(course);
+          print("Curso ${course.titulo} añadido a 'Nuevas Misiones'.");
+        }
+      }
+
+      print("Cursos finales 'En Curso': ${currentCourses.length}");
+    print("Cursos finales 'Nuevas Misiones': ${newCourses.length}");
+
+      // Devolver los datos clasificados
+      return CourseData(
+        currentCourses.take(3).toList(),
+        newCourses.take(3).toList(),
+      );
+    } catch (e) {
+      print("Error fetching or filtering courses: $e");
+      // Devolver listas vacías en caso de error
+      return CourseData([], []);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFE1A8),
-      
 
-      // Contenido principal
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // --- Tu entrenamiento en curso ---
-            _buildSectionTitle("Tu entrenamiento en curso", "Ver todos"),
-            const SizedBox(height: 10),
-            _buildCoursesList(currentCourses),
-
-            const SizedBox(height: 15),
-
-            // --- Nuevas misiones ---
-            _buildSectionTitle("Nuevas misiones", "Ver todos"),
-            const SizedBox(height: 10),
-            _buildCoursesList(newCourses),
-
-            const SizedBox(height: 15),
-
-            // --- Ciberconsejo del día ---
-            const Text(
-              "Ciber-consejo ninja del día",
-              style: TextStyle(
-                color: Color(0xFF723D46),
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-  decoration: BoxDecoration(
-    color: const Color(0xB3472D30),
-    borderRadius: BorderRadius.circular(16),
-  ),
-  padding: const EdgeInsets.all(16),
-  child: Row(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      // Imagen del consejo (segura)
-      ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.asset(
-          'assets/images/homeFiles/consejo.png',
-          width: 70,
-          height: 70,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              width: 70,
-              height: 70,
-              color: Colors.white24,
-              child: const Icon(Icons.lightbulb, color: Colors.white, size: 36),
+      body: FutureBuilder<CourseData>(
+        future: _coursesFuture,
+        builder: (context, snapshot) {
+          // Estado de Carga
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(color: Color(0xFF723D46)),
             );
-          },
-        ),
-      ),
-      const SizedBox(width: 16),
-      // Texto del consejo
-      const Expanded(
-        child: Text(
-          "Nunca compartas tus contraseñas, ni siquiera con tus amigos. "
-          "Usa contraseñas únicas y seguras en cada cuenta.",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 15,
-            height: 1.4,
-          ),
-        ),
-      ),
-    ],
-  ),
-)
-          ],
-        ),
+          }
+
+          // Estado de Error
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                "Error al cargar las misiones: ${snapshot.error}",
+                style: TextStyle(color: Color(0xFF472D30)),
+              ),
+            );
+          }
+
+          // Estado de Datos Listos
+          final courseData = snapshot.data ?? CourseData([], []);
+          final currentCourses = courseData.currentCourses;
+          final newCourses = courseData.newCourses;
+
+          // Contenido principal
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // --- Tu entrenamiento en curso ---
+                _buildSectionTitle("Tu entrenamiento en curso", "Ver todos"),
+                const SizedBox(height: 10),
+                _buildCoursesList(currentCourses),
+
+                const SizedBox(height: 15),
+
+                // --- Nuevas misiones ---
+                _buildSectionTitle("Nuevas misiones", "Ver todos"),
+                const SizedBox(height: 10),
+                _buildCoursesList(newCourses),
+
+                const SizedBox(height: 15),
+
+                // --- Ciberconsejo del día ---
+                const Text(
+                  "Ciber-consejo ninja del día",
+                  style: TextStyle(
+                    color: Color(0xFF723D46),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xB3472D30),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Imagen del consejo (segura)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          'assets/images/homeFiles/consejo.png',
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: 70,
+                              height: 70,
+                              color: Colors.white24,
+                              child: const Icon(
+                                Icons.lightbulb,
+                                color: Colors.white,
+                                size: 36,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      // Texto del consejo
+                      const Expanded(
+                        child: Text(
+                          "Nunca compartas tus contraseñas, ni siquiera con tus amigos. "
+                          "Usa contraseñas únicas y seguras en cada cuenta.",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -166,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Widget reutilizable: lista horizontal de cursos
-  Widget _buildCoursesList(List<Map<String, dynamic>> courses) {
+  Widget _buildCoursesList(List<CourseModel> courses) {
     return SizedBox(
       height: 192,
       child: ListView.builder(
@@ -175,8 +244,8 @@ class _HomeScreenState extends State<HomeScreen> {
         itemBuilder: (context, index) {
           final course = courses[index];
           return GestureDetector(
-            onTap:() {
-              widget.onCourseSelected(course["title"]);
+            onTap: () {
+              widget.onCourseSelected(course.titulo);
             },
             child: Container(
               width: 140,
@@ -199,7 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    course["title"],
+                    course.titulo,
                     style: const TextStyle(
                       color: Color(0xFFFFE1A8),
                       fontSize: 16,
@@ -208,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    course["lessons"],
+                    "${course.numLecciones} lecciones",
                     style: const TextStyle(
                       color: Color(0xFFFFE1A8),
                       fontSize: 13,
@@ -216,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    course["belt"],
+                    "Nivel: ${course.nivel}",
                     style: const TextStyle(
                       color: Color(0xFFFFE1A8),
                       fontSize: 13,
