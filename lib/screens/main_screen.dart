@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cyber_dojo/models/user.dart';
 import 'package:cyber_dojo/screens/auth/login_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_completed_screen.dart';
+import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_container_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_text_screen.dart';
 import 'package:cyber_dojo/screens/profile/beltsAndBadges_screen.dart';
 import 'package:cyber_dojo/screens/profile/edit_profile_screen.dart';
@@ -26,7 +27,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _selectedIndex = 0; // 0 = home, 1 = dojo, etc.
   String? _selectedCourseId; // Guarda el id del curso actual en String
   String? _selectedCourseTitle; // Guarda el Título del curso.
-  Map<String, String>? _selectedLesson; // Guarda la lección actual
+  //Map<String, String>? _selectedLesson; // Guarda la lección actual
+  String? _selectedLessonId;
+  String? _selectedLessonTitle;
   bool _editingProfile = false; //Datos de perfil en edición o no
   bool _viewingBadges = false; //Bool para ver o no las medallas
   late UserModel _currentUser;
@@ -149,12 +152,69 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     }
   }
 
+  // Función para iniciar una lección
+  void _startLesson(String courseTitle, String idLeccion, String lessonTitle) {
+    setState(() {
+      _selectedCourseTitle = courseTitle; 
+      _selectedLessonId = idLeccion; 
+      _selectedLessonTitle = lessonTitle; 
+    });
+  }
+
+  // Función para volver al listado de lecciones
+  void _backToLessons() {
+    setState(() {
+      _selectedLessonId = null; 
+      _selectedLessonTitle = null; 
+    });
+  }
+
+  // Función para una lección completada
+  void _lessonCompleted() {
+    //  guardar el progreso o navegar a la pantalla de "Lección Completada"
+    // Por simplicidad, volvemos a la lista de lecciones.
+    _backToLessons();
+    
+    // Si quisieras la pantalla de COMPLETADO:
+    // setState(() => _courseCompleted = true);
+  }
+
   // Manejo de la informacion que se muestra en el body
   @override
   Widget build(BuildContext context) {
     Widget body;
-    if (_selectedCourseId != null && _selectedLesson?["type"] == "question") {
-      //Mostrar pantalla de pregunta
+    // Si hay un ID de lección activo, se muestra el contenedor de la lección
+    // Se encarga de msotrar TEXTO, PREGUNTA o COMPLETED
+    if (_selectedLessonId != null) {
+      body = DojoLessonContainerScreen(
+        idLeccion: _selectedLessonId!, 
+        courseTitle: _selectedCourseTitle!, 
+        lessonTitle: _selectedLessonTitle!, 
+        onLessonCompleted: _lessonCompleted, 
+        onBackToLessons: _backToLessons
+        );
+
+        // Si hay un ID de curso activo, pero no una lección, se vuelve a la lista de lecicones
+    } else if (_selectedCourseId != null) {
+      body = DojoCourseScreen(
+        courseId: _selectedCourseId!, 
+        onBack: () => setState(() {
+          _selectedCourseId = null;
+          _selectedCourseTitle = null;
+        }), 
+        onLessonSelected: (courseTitle, idLeccion, lessonTitle){
+        _startLesson(courseTitle, idLeccion, lessonTitle);
+        },
+        );
+        
+        // Logica de navegacion principal (Home, Dojo, Courses, Profile)
+    } else {
+      Widget screen = const Center( child: Text("Pantalla no encontrada"),);
+
+/*
+
+
+      // Mostrar pantalla de pregunta
       body = DojoLessonQuestionScreen(
         courseTitle: _selectedCourseTitle!,
         lessonTitle: _selectedLesson!["title"]!,
@@ -238,6 +298,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       Widget screen = const Center(
         child: Text("Pantalla no encontrada"),
       ); //Valor por defecto por errores
+
+      */
 
       if (_selectedIndex == 0) {
         screen = HomeScreen(
@@ -325,6 +387,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
       body = screen;
     }
+  
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFE1A8),
@@ -426,7 +489,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           setState(() {
             _selectedCourseId = null;
             _selectedCourseTitle = null; 
-            _selectedLesson = null;
+            _selectedLessonId = null;
+            _selectedLessonTitle = null;
             _selectedIndex = index;
           });
 

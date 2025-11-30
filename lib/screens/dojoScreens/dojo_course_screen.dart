@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class DojoCourseScreen extends StatefulWidget {
   final String courseId;
   final VoidCallback onBack;
-  final void Function(Map<String, String> lesson) onLessonSelected;
+  final void Function(String courseTitle, String idLeccion, String lessonTitle) onLessonSelected;
 
   const DojoCourseScreen({
     super.key,
@@ -195,12 +195,11 @@ class _DojoCourseScreenState extends State<DojoCourseScreen> {
                           ),
                         ),
                         onPressed: () {
-                          widget.onLessonSelected({
-                            "title": lesson.titulo,
-                            "idLeccion": lesson.idLeccion,
-                            "text":
-                                "Aquí irá el contenido de la lección '${lesson.titulo}'.",
-                          });
+                          widget.onLessonSelected(
+                            course.titulo,
+                            lesson.idLeccion,
+                            lesson.titulo
+                          );
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,

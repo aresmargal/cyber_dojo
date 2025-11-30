@@ -12,9 +12,10 @@ class PreguntaModel {
   // Constructor para mapear datos desde el Map de Firestore (anidado)
   factory PreguntaModel.fromMap(Map<String, dynamic> data) {
     // Lista dinámica de respuestas (Map<String, dynamic>) a List<RespuestaModel> usando su factory
-    final List<dynamic> respuestasData = data['respuestas'] ?? [];
-    final List<RespuestaModel> respuestasList = respuestasData
-        .map((respuestaMap) => RespuestaModel.fromMap(respuestaMap as Map<String, dynamic>))
+    final Map<String, dynamic> respuestasMap = data['respuestas'] as Map<String, dynamic>? ?? {};
+
+    final List<RespuestaModel> respuestasList = respuestasMap.values
+        .map((respuestaMapValue) => RespuestaModel.fromMap(respuestaMapValue as Map<String, dynamic>))
         .toList();
 
     return PreguntaModel(
