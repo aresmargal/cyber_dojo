@@ -49,7 +49,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/logoNoNombre.png"
+  image_path: "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/logoNoNombre.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -61,33 +61,6 @@ flutter:
   
   assets:
     - assets/images/
-    - assets/images/onBoarding/onBng1.svg
-    - assets/images/onBoarding/onBng2.svg
-    - assets/images/onBoarding/onBng3.svg
-    - assets/images/pfp/pfp1.png
-    - assets/images/pfp/pfp2.png
-    - assets/images/pfp/pfp3.png
-    - assets/images/pfp/pfp4.png
-    - assets/images/pfp/pfp5.png
-    - assets/images/pfp/pfp6.png
-    - assets/images/homeFiles/consejo.png
-    - assets/images/loginScreen.svg
-    - assets/images/logoNoNombre.png
-    - assets/images/accountSetup/accSt1.svg
-    - assets/images/accountSetup/accSt2.svg
-    - assets/images/accountSetup/accSt3.svg
-    - assets/images/badges/cinturonAm.png
-    - assets/images/badges/cinturonBlanco.png
-    - assets/images/badges/cinturonVerde.png
-    - assets/images/icons/coursesIcon.png
-    - assets/images/icons/coursesIconFull.png
-    - assets/images/icons/dojoIcon.png
-    - assets/images/icons/dojoIconFull.png
-    - assets/images/icons/homeIcon.png
-    - assets/images/icons/homeIconFull.png
-    - assets/images/icons/profileIcon.png
-    - assets/images/icons/profileIconFull.png
-    - assets/images/buttonsIcons/ninjaIcon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

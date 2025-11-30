@@ -153,8 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       // Imagen del consejo (segura)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          'assets/images/homeFiles/consejo.png',
+                        child: Image.network(
+                          'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/buttons/consejo.png',
                           width: 70,
                           height: 70,
                           fit: BoxFit.cover,

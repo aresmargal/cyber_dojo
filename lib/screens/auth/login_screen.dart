@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 // Imagen superior
-                SvgPicture.asset('assets/images/loginScreen.svg', height: 180),
+                SvgPicture.network('https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/accountSetup/loginScreen.svg', height: 180),
                 const SizedBox(height: 20),
 
                 // Texto motivador

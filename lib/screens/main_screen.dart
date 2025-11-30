@@ -30,8 +30,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   bool _viewingBadges = false; //Bool para ver o no las medallas
   late UserModel _currentUser;
 
-  
-
   DateTime? _sessionStartTime; //Variable de tiempo en la app según sesión
 
   @override
@@ -273,7 +271,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
               setState(() => _viewingBadges = false);
             },
             userBadges: _currentUser.badges?.cast<int>() ?? [],
-            user: _currentUser
+            user: _currentUser,
           );
         } else {
           screen = _editingProfile
@@ -422,39 +420,40 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
             _refreshUserData();
           }
         },
+
         items: [
           BottomNavigationBarItem(
-            icon: Image.asset(
+            icon: Image.network(
               _selectedIndex == 0
-                  ? "assets/images/icons/homeIconFull.png"
-                  : "assets/images/icons/homeIcon.png",
+                  ? "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/bottomNavigation/homeIconFull.png"
+                  : "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/bottomNavigation/homeIcon.png",
               height: 26,
             ),
             label: "Inicio",
           ),
           BottomNavigationBarItem(
-            icon: Image.asset(
+            icon: Image.network(
               _selectedIndex == 1
-                  ? "assets/images/icons/dojoIconFull.png"
-                  : "assets/images/icons/dojoIcon.png",
-              height: 32,
+                  ? "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/bottomNavigation/dojoIconFull.png"
+                  : "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/bottomNavigation/dojoIcon.png",
+              height: 26,
             ),
             label: "Dojo",
           ),
           BottomNavigationBarItem(
-            icon: Image.asset(
+            icon: Image.network(
               _selectedIndex == 2
-                  ? "assets/images/icons/coursesIconFull.png"
-                  : "assets/images/icons/coursesIcon.png",
+                  ? "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/bottomNavigation/coursesIconFull.png"
+                  : "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/bottomNavigation/coursesIcon.png",
               height: 28,
             ),
             label: "Misiones",
           ),
           BottomNavigationBarItem(
-            icon: Image.asset(
+            icon: Image.network(
               _selectedIndex == 3
-                  ? "assets/images/icons/profileIconFull.png"
-                  : "assets/images/icons/profileIcon.png",
+                  ? "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/bottomNavigation/profileIconFull.png"
+                  : "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/bottomNavigation/profileIcon.png",
               height: 26,
             ),
             label: "Perfil",

@@ -121,7 +121,7 @@ class _SplashScreenState extends State<SplashScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/logo.png', width: 150),
+              Image.network('https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/logo.png', width: 150),
               const SizedBox(height: 20),
             ],
           ),

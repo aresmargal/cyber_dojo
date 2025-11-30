@@ -17,18 +17,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<Map<String, String>> onboardingData = [
     {
-      "image": "assets/images/onBoarding/onBng1.svg",
+      "image": "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/onBng/onBng1.svg",
       "title": "Entrena como un ninja digital",
       "subtitle": "Domina la ciberseguridad desde cero",
     },
     {
-      "image": "assets/images/onBoarding/onBng2.svg",
+      "image": "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/onBng/onBng2.svg",
       "title": "Avanza de cinturón en cinturón",
       "subtitle":
           "Supera lecciones y sube de rango en tu camino a la ciberseguridad",
     },
     {
-      "image": "assets/images/onBoarding/onBng3.svg",
+      "image": "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/onBng/onBng3.svg",
       "title": "Protege, aprende, domina",
       "subtitle": "Conviértete en un experto en seguridad paso a paso",
     },
@@ -162,7 +162,7 @@ class OnboardContent extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset(image, height: 250),
+          SvgPicture.network(image, height: 250),
           const SizedBox(height: 40),
           Text(
             title,
