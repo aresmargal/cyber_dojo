@@ -20,51 +20,68 @@ class DojoScreen extends StatefulWidget {
 }
 
 class _DojoScreenState extends State<DojoScreen> {
+  // Stream para obtener la estructura de progreso del usuario en tiempo real
+  Stream<Map<String, dynamic>> _userProgressStream() {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.currentUser.id)
+        .snapshots()
+        .map((snapshot) {
+          // Devuelve solo el mapa progreso_cursos
+          return snapshot.data()?['progreso_cursos'] as Map<String, dynamic>? ??
+              {};
+        });
+  }
+
   // Función para obtener los cursos activos del usuario
   Stream<List<Map<String, dynamic>>> _getActiveCoursesStream() async* {
-    final activeCourseIds =
-        widget.currentUser.progresoCursos?.keys.toList() ?? [];
+    // Escucha el progreso del usuario
+    await for (final userProgress in _userProgressStream()) {
+      final activeCourseIds = userProgress.keys.toList();
 
-    if (activeCourseIds.isEmpty) {
-      yield []; // Si no hay cursos activos, devolver lista vacía
-      return;
-    }
-
-    // Buscar los detalles de todos los cursos en paralelo
-    final List<Future<DocumentSnapshot<Map<String, dynamic>>>> courseFutures =
-        activeCourseIds
-            .map(
-              (id) =>
-                  FirebaseFirestore.instance.collection('curso').doc(id).get(),
-            )
-            .toList();
-
-    final List<DocumentSnapshot<Map<String, dynamic>>> courseDocs =
-        await Future.wait(courseFutures);
-
-    final List<Map<String, dynamic>> coursesData = [];
-    for (var doc in courseDocs) {
-      if (doc.exists) {
-        final courseModel = CourseModel.fromFirestore(doc);
-        final courseId = doc.id;
-        final progress = widget.currentUser.progresoCursos![courseId];
-
-        // Obtener el estado y el progreso
-        final completedLessons =
-            progress?['lecciones_completadas'] as int? ?? 0;
-        final isCompleted = progress?['completado'] as bool? ?? false;
-
-        // Formatear los datos
-        coursesData.add({
-          "title": courseModel.titulo,
-          "lessons": "${courseModel.numLecciones}/$completedLessons",
-          "belt": courseModel.nivel,
-          "isCompleted": isCompleted,
-        });
+      if (activeCourseIds.isEmpty) {
+        yield []; // Si no hay cursos activos, devuelve la lista vacía
+        continue;
       }
-    }
 
-    yield coursesData;
+      // Buscar los detalles de todos los cursos en paralelo
+      final List<Future<DocumentSnapshot<Map<String, dynamic>>>> courseFutures =
+          activeCourseIds
+              .map(
+                (id) => FirebaseFirestore.instance
+                    .collection('curso')
+                    .doc(id)
+                    .get(),
+              )
+              .toList();
+
+      final List<DocumentSnapshot<Map<String, dynamic>>> courseDocs =
+          await Future.wait(courseFutures);
+
+      final List<Map<String, dynamic>> coursesData = [];
+      for (var doc in courseDocs) {
+        if (doc.exists) {
+          final courseModel = CourseModel.fromFirestore(doc);
+          final courseId = doc.id;
+          final progress = userProgress[courseId];
+
+          // Obtener el estado y el progreso
+          final completedLessons =
+              progress?['lecciones_completadas'] as int? ?? 0;
+          final isCompleted = progress?['completado'] as bool? ?? false;
+
+          // Formatear los datos
+          coursesData.add({
+            "title": courseModel.titulo,
+            "lessons": "${courseModel.numLecciones}/$completedLessons",
+            "belt": courseModel.nivel,
+            "isCompleted": isCompleted,
+          });
+        }
+      }
+
+      yield coursesData;
+    }
   }
 
   @override

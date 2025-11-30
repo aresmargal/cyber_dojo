@@ -33,6 +33,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late Future<CourseData> _coursesFuture;
 
+  void _rechargeCourses() {
+    setState(() {
+      _coursesFuture = _fetchAndFilterCourses();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +48,14 @@ class _HomeScreenState extends State<HomeScreen> {
   // Función asíncrona para obtener y clasificar los cursos
   Future<CourseData> _fetchAndFilterCourses() async {
     try {
+      // Obtener la últimna versión del progreso del usuario
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users') // Usar 'users', como confirmaste
+        .doc(widget.currentUser.id)
+        .get();
+
+    final userProgress = userDoc.data()?['progreso_cursos'] as Map<String, dynamic>? ?? {};
+
       // Obtener todos los cursos de Firestore
       final courseSnapshot = await FirebaseFirestore.instance
           .collection('curso')
@@ -51,9 +65,6 @@ class _HomeScreenState extends State<HomeScreen> {
       final allCourses = courseSnapshot.docs
           .map((doc) => CourseModel.fromFirestore(doc))
           .toList();
-
-      // Obtener el progreso del usuario
-      final userProgress = widget.currentUser.progresoCursos ?? {};
 
       List<CourseModel> currentCourses = [];
       List<CourseModel> newCourses = [];
@@ -272,9 +283,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(
                   builder: (context) => CourseDetailScreen(
                     courseId: course.idCurso, 
+                    currentUserId: widget.currentUser.id,
                   ),
                 ),
-              );
+              ).then((result){
+                if (result == true) _rechargeCourses();
+              });
             }
             },
             child: Container(

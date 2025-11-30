@@ -5,8 +5,13 @@ import 'package:flutter/material.dart';
 
 class CourseDetailScreen extends StatefulWidget {
   final String courseId;
+  final String currentUserId;
 
-  const CourseDetailScreen({super.key, required this.courseId});
+  const CourseDetailScreen({
+    super.key,
+    required this.courseId,
+    required this.currentUserId,
+  });
 
   @override
   State<CourseDetailScreen> createState() => _CourseDetailScreenState();
@@ -14,6 +19,8 @@ class CourseDetailScreen extends StatefulWidget {
 
 class _CourseDetailScreenState extends State<CourseDetailScreen> {
   late Future<Map<String, dynamic>> _courseDataFuture;
+  bool _isAdding = false; // Variable para controlar el estado del botón
+  bool _isCourseAdded = false; //Variable para saber si el curso ya fue añadido
 
   @override
   void initState() {
@@ -49,6 +56,59 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
     }
 
     return {'course': course, 'badges': badges};
+  }
+
+  // Función para añadir el curso al perfil del usuario
+  Future<void> _addCourseToDojo(CourseModel course) async {
+    if (_isAdding) return; // Evita clics múltiples
+
+    setState(() {
+      _isAdding = true;
+    });
+
+    try {
+      final userRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.currentUserId);
+
+      await userRef.update({
+      'progreso_cursos.${widget.courseId}': {
+        'completado': false,
+        'lecciones_completadas': 0, 
+        'total_lecciones': course.numLecciones, 
+      },
+    });
+
+      setState(() {
+        _isCourseAdded = true;
+      });
+
+      // Mostrar SnackBar de éxito
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Misión añadida al dojo con éxito!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      // Mostrar SnackBar de error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al añadir misión: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      setState(() {
+        _isAdding = false;
+      });
+    }
   }
 
   @override
@@ -206,22 +266,34 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
 
                   // Botón “Añadir misión al dojo”
                   ElevatedButton.icon(
-                    onPressed: () {
-                      // TODO: conectar con lógica de añadir curso al perfil
-                    },
-                    icon: const Icon(
-                      Icons.add_circle_outline,
-                      color: Color(0xFF472D30),
+                    onPressed: _isCourseAdded || _isAdding
+                        ? null
+                        : () => _addCourseToDojo(course),
+                    icon: Icon(
+                      _isCourseAdded
+                          ? Icons.check_circle
+                          : Icons.add_circle_outline,
+                      color: _isCourseAdded
+                          ? Colors.white
+                          : const Color(0xFF472D30),
                     ),
-                    label: const Text(
-                      "Añadir misión al dojo",
+                    label: Text(
+                      _isAdding
+                          ? "Añadiendo..."
+                          : _isCourseAdded
+                          ? "Misión añadida"
+                          : "Añadir misión al dojo",
                       style: TextStyle(
-                        color: Color(0xFF472D30),
+                        color: _isCourseAdded
+                            ? Colors.white
+                            : const Color(0xFF472D30),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFC9CBA3),
+                      backgroundColor: _isCourseAdded
+                          ? const Color(0xFF723D46)
+                          : const Color(0xFFC9CBA3),
                       padding: const EdgeInsets.symmetric(
                         vertical: 14,
                         horizontal: 24,

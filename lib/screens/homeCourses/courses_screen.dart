@@ -21,6 +21,13 @@ class CoursesScreen extends StatefulWidget {
 class _CoursesScreenState extends State<CoursesScreen> {
   late Future<List<CourseModel>> _newCoursesFuture;
 
+  void _rechargeCourses() {
+    setState(() {
+      _newCoursesFuture =
+          _fetchNewCourses(); // Fuerza a FutureBuilder a ejecutar _fetchNewCourses() de nuevo
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -29,6 +36,15 @@ class _CoursesScreenState extends State<CoursesScreen> {
 
   Future<List<CourseModel>> _fetchNewCourses() async {
     try {
+      // Obtener la última versión del progreso del usuario desde firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.currentUser.id)
+          .get();
+
+      final userProgress =
+          userDoc.data()?['progreso_cursos'] as Map<String, dynamic>? ?? {};
+
       final courseSnapshot = await FirebaseFirestore.instance
           .collection('curso')
           .orderBy('titulo')
@@ -37,9 +53,6 @@ class _CoursesScreenState extends State<CoursesScreen> {
       final allCourses = courseSnapshot.docs
           .map((doc) => CourseModel.fromFirestore(doc))
           .toList();
-
-      // Obtener el progreso del usuario
-      final userProgress = widget.currentUser.progresoCursos ?? {};
 
       List<CourseModel> newCourses = [];
 
@@ -123,9 +136,14 @@ class _CoursesScreenState extends State<CoursesScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CourseDetailScreen(courseId: course.idCurso,),
+                          builder: (context) => CourseDetailScreen(
+                            courseId: course.idCurso,
+                            currentUserId: widget.currentUser.id,
+                          ),
                         ),
-                      );
+                      ).then((result) {
+                        if (result == true) _rechargeCourses();
+                      });
                     },
                     child: Container(
                       decoration: BoxDecoration(
