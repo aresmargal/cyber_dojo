@@ -13,7 +13,7 @@ class CourseData {
 }
 
 class HomeScreen extends StatefulWidget {
-  final void Function(String) onCourseSelected;
+  final void Function(String courseId, String courseTitle) onCourseSelected;
   final UserModel currentUser;
   final VoidCallback onExploreCourses;
   final VoidCallback onGoToDojo;
@@ -275,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               if (isCurrentCourses) {
               // Llama al callback para ir al flujo de Dojo (lecciones)
-              widget.onCourseSelected(course.titulo);
+              widget.onCourseSelected(course.idCurso, course.titulo);
             } else {
               // Navega directamente a la pantalla de detalles (sin iniciar el curso)
               Navigator.push(

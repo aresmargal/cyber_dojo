@@ -24,7 +24,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _selectedIndex = 0; // 0 = home, 1 = dojo, etc.
-  String? _selectedCourse; // Guarda el curso actual abierto
+  String? _selectedCourseId; // Guarda el id del curso actual en String
+  String? _selectedCourseTitle; // Guarda el Título del curso.
   Map<String, String>? _selectedLesson; // Guarda la lección actual
   bool _editingProfile = false; //Datos de perfil en edición o no
   bool _viewingBadges = false; //Bool para ver o no las medallas
@@ -152,10 +153,10 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     Widget body;
-    if (_selectedCourse != null && _selectedLesson?["type"] == "question") {
+    if (_selectedCourseId != null && _selectedLesson?["type"] == "question") {
       //Mostrar pantalla de pregunta
       body = DojoLessonQuestionScreen(
-        courseTitle: _selectedCourse!,
+        courseTitle: _selectedCourseTitle!,
         lessonTitle: _selectedLesson!["title"]!,
         questionText: "¿Cuál de las siguientes contraseñas es más segura?",
         options: ["12345678", "Lyd!@2024", "contraseña"],
@@ -182,10 +183,10 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           });
         },
       );
-    } else if (_selectedCourse != null &&
+    } else if (_selectedCourseId != null &&
         _selectedLesson?["type"] == "completed") {
       body = DojoCourseCompletedScreen(
-        courseTitle: _selectedCourse!,
+        courseTitle: _selectedCourseTitle!,
         courseDescription:
             "Aprende las bases de la ciberseguridad mientras entrenas como un ninja digital.",
         courseImage: "",
@@ -193,14 +194,15 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         onBackToCourses: () {
           setState(() {
             _selectedLesson = null;
-            _selectedCourse = null;
+            _selectedCourseTitle = null;
+            _selectedCourseId = null;
           });
         },
       );
     } else if (_selectedLesson != null) {
       //Mostrar pantalla de texto
       body = DojoLessonTextScreen(
-        courseTitle: _selectedCourse!,
+        courseTitle: _selectedCourseTitle!,
         lessonTitle: _selectedLesson!["title"]!,
         lessonText: _selectedLesson!["text"]!,
         onBack: () => setState(() => _selectedLesson = null),
@@ -215,10 +217,13 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           });
         },
       );
-    } else if (_selectedCourse != null) {
+    } else if (_selectedCourseId != null) {
       body = DojoCourseScreen(
-        courseTitle: _selectedCourse!,
-        onBack: () => setState(() => _selectedCourse = null),
+        courseId: _selectedCourseId!,
+        onBack: () => setState(() {
+          _selectedCourseId = null; 
+          _selectedCourseTitle = null; 
+        }),
         onLessonSelected: (lesson) {
           setState(
             () => _selectedLesson = {
@@ -236,8 +241,10 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
       if (_selectedIndex == 0) {
         screen = HomeScreen(
-          onCourseSelected: (courseTitle) {
-            setState(() => _selectedCourse = courseTitle);
+          onCourseSelected: (courseId, courseTitle) {
+            setState(() {_selectedCourseId = courseId; 
+            _selectedCourseTitle = courseTitle;});
+          
           },
           currentUser: _currentUser,
           onExploreCourses: () {
@@ -249,8 +256,11 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         );
       } else if (_selectedIndex == 1) {
         screen = DojoScreen(
-          onCourseSelected: (courseTitle) {
-            setState(() => _selectedCourse = courseTitle);
+          onCourseSelected: (courseId, courseTitle) {
+            setState(() {
+              _selectedCourseId = courseId; 
+              _selectedCourseTitle = courseTitle;
+            });
           },
           onExploreCourses: () {
             setState(() => _selectedIndex = 2);
@@ -259,8 +269,11 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         );
       } else if (_selectedIndex == 2) {
         screen = CoursesScreen(
-          onCourseSelected: (courseTitle) {
-            setState(() => _selectedCourse = courseTitle);
+          onCourseSelected: (courseId, courseTitle) {
+            setState(() {
+              _selectedCourseId = courseId; 
+              _selectedCourseTitle = courseTitle;
+            });
           },
           currentUser: _currentUser,
         );
@@ -411,7 +424,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         currentIndex: _selectedIndex,
         onTap: (index) {
           setState(() {
-            _selectedCourse = null;
+            _selectedCourseId = null;
+            _selectedCourseTitle = null; 
             _selectedLesson = null;
             _selectedIndex = index;
           });

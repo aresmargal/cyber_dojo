@@ -4,7 +4,7 @@ import 'package:cyber_dojo/models/user.dart';
 import 'package:flutter/material.dart';
 
 class DojoScreen extends StatefulWidget {
-  final void Function(String) onCourseSelected;
+  final void Function(String courseId, String courseTitle) onCourseSelected;
   final VoidCallback onExploreCourses;
   final UserModel currentUser;
 
@@ -72,6 +72,7 @@ class _DojoScreenState extends State<DojoScreen> {
 
           // Formatear los datos
           coursesData.add({
+            "id": courseId,
             "title": courseModel.titulo,
             "lessons": "${courseModel.numLecciones}/$completedLessons",
             "belt": courseModel.nivel,
@@ -154,7 +155,7 @@ class _DojoScreenState extends State<DojoScreen> {
                         : Colors.white70;
 
                     return GestureDetector(
-                      onTap: () => widget.onCourseSelected(course["title"]!),
+                      onTap: () => widget.onCourseSelected(course["id"]!, course["title"]!),
                       child: Container(
                         decoration: BoxDecoration(
                           color: const Color(0xB3472D30),

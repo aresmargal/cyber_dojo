@@ -5,7 +5,7 @@ import 'package:cyber_dojo/screens/homeCourses/course_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class CoursesScreen extends StatefulWidget {
-  final void Function(String) onCourseSelected;
+  final void Function(String courseId, String courseTitle) onCourseSelected;
   final UserModel currentUser;
 
   const CoursesScreen({
