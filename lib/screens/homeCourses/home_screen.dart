@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cyber_dojo/models/course.dart';
 import 'package:cyber_dojo/models/user.dart';
+import 'package:cyber_dojo/screens/homeCourses/course_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 // Clase de ayuda para el FutureBuilder, ya que contiene dos listas
@@ -120,14 +121,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 // --- Tu entrenamiento en curso ---
                 _buildSectionTitle("Tu entrenamiento en curso", "Ver todos"),
                 const SizedBox(height: 10),
-                _buildCoursesList(currentCourses),
+                _buildCoursesList(currentCourses, true),
 
                 const SizedBox(height: 15),
 
                 // --- Nuevas misiones ---
                 _buildSectionTitle("Nuevas misiones", "Ver todos"),
                 const SizedBox(height: 10),
-                _buildCoursesList(newCourses),
+                _buildCoursesList(newCourses, false),
 
                 const SizedBox(height: 15),
 
@@ -235,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Widget reutilizable: lista horizontal de cursos
-  Widget _buildCoursesList(List<CourseModel> courses) {
+  Widget _buildCoursesList(List<CourseModel> courses, bool isCurrentCourses) {
     final userProgress = widget.currentUser.progresoCursos ?? {};
 
     return SizedBox(
@@ -261,7 +262,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
           return GestureDetector(
             onTap: () {
+              if (isCurrentCourses) {
+              // Llama al callback para ir al flujo de Dojo (lecciones)
               widget.onCourseSelected(course.titulo);
+            } else {
+              // Navega directamente a la pantalla de detalles (sin iniciar el curso)
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CourseDetailScreen(
+                    courseId: course.idCurso, 
+                  ),
+                ),
+              );
+            }
             },
             child: Container(
               width: 140,

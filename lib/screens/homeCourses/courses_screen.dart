@@ -123,7 +123,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const CourseDetailScreen(),
+                          builder: (context) => CourseDetailScreen(courseId: course.idCurso,),
                         ),
                       );
                     },
