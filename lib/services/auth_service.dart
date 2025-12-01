@@ -22,7 +22,7 @@ class AuthService extends ChangeNotifier {
 
       // Escuchar en tiempo real el documento del usuario en Firestore
       final firestoreStream = FirebaseFirestore.instance
-          .collection("usuarios")
+          .collection("users")
           .doc(firebaseUser.uid)
           .snapshots();
 

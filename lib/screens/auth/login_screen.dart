@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cyber_dojo/models/user.dart';
 import 'package:cyber_dojo/screens/main_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cyber_dojo/screens/auth/register_screen.dart';
@@ -29,36 +30,32 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text.trim();
 
     try {
-      final query = await FirebaseFirestore.instance
+      final userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+
+      final String uid = userCredential.user!.uid;
+
+      final doc = await FirebaseFirestore.instance
           .collection('users')
-          .where('email', isEqualTo: email)
-          .limit(1)
+          .doc(uid)
           .get();
 
-      if (query.docs.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Usuario no encontrado")));
+      if (!doc.exists) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Error: Perfil de usuario no encontrado."),
+          ),
+        );
+        // Desloguear de Auth si el documento no existe
+        await FirebaseAuth.instance.signOut();
         return;
       }
 
-      final doc = query.docs.first;
-      final userData = doc.data();
-
-      //Comprobar contraeña TODO: SOLO PARA PRUEBAS, CAMBIAR A FIREBASE AUTHENTICATOR
-      if (userData['password'] != password) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Contraseña incorrecta")));
-        return;
-      }
-
-      // Crear el UserModel
-      final user = UserModel.fromMap(doc.id, userData);
+      final user = UserModel.fromFirestore(doc);
 
       // Guardar el ID del usuario en SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString("user_id", doc.id);
+      await prefs.setString("user_id", uid);
 
       if (mounted) {
         Navigator.pushReplacement(
@@ -66,6 +63,17 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (context) => MainScreen(user: user)),
         );
       }
+    } on FirebaseAuthException catch (e) {
+      String message = 'Error de inicio de sesión. Comprueba tus credenciales.';
+
+      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+        message = "Correo o contraseña incorrectos.";
+      }
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -94,7 +102,10 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 // Imagen superior
-                SvgPicture.network('https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/accountSetup/loginScreen.svg', height: 180),
+                SvgPicture.network(
+                  'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/accountSetup/loginScreen.svg',
+                  height: 180,
+                ),
                 const SizedBox(height: 20),
 
                 // Texto motivador

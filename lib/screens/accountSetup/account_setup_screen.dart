@@ -27,19 +27,34 @@ class AccountSetupData {
 
 final List<AccountSetupData> setupPages = [
   AccountSetupData(
-    imageSvg: 'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/accountSetup/accSt1.svg',
+    imageSvg:
+        'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/accountSetup/accSt1.svg',
     title: '¿Cuál es tu nivel en ciberseguridad?',
-    options: ['Principiante absoluto', 'Tengo algunas nociones', 'Sé bastante y quiero mejorar'],
+    options: [
+      'Principiante absoluto',
+      'Tengo algunas nociones',
+      'Sé bastante y quiero mejorar',
+    ],
   ),
   AccountSetupData(
-    imageSvg: 'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/accountSetup/accSt2.svg',
+    imageSvg:
+        'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/accountSetup/accSt2.svg',
     title: '¿Qué quieres aprender con CyberDojo',
-    options: ['Protegerme en Internet', 'Descubrir trucos de hackers', 'Ser un ninja digital'],
+    options: [
+      'Protegerme en Internet',
+      'Descubrir trucos de hackers',
+      'Ser un ninja digital',
+    ],
   ),
   AccountSetupData(
-    imageSvg: 'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/accountSetup/accSt3.svg',
+    imageSvg:
+        'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/accountSetup/accSt3.svg',
     title: '¿Cuánto quieres entrenar al día?',
-    options: ['Un poco (5 minutos)', 'Un rato (10 minutos)', 'Modo ninja (15 minutos)'],
+    options: [
+      'Un poco (5 minutos)',
+      'Un rato (10 minutos)',
+      'Modo ninja (15 minutos)',
+    ],
   ),
 ];
 
@@ -50,26 +65,38 @@ class _AccountSetupScreenState extends State<AccountSetupScreen> {
 
   Future<void> _nextPage() async {
     if (selectedOptions[currentPage] == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Selecciona una opción")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Selecciona una opción")));
       return;
     }
 
     if (currentPage == 0) {
       String nivel = 'Blanco';
       final opt = selectedOptions[0];
-      if (opt == 0) nivel = 'Blanco';
-      else if (opt == 1 ) nivel = 'Amarillo';
-      else nivel = 'Verde';
+      if (opt == 0)
+        nivel = 'Blanco';
+      else if (opt == 1)
+        nivel = 'Amarillo';
+      else
+        nivel = 'Verde';
 
-      // Actualizar Firestore
-      await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.user.id)
-        .update({'nivel': nivel});
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.user.id)
+            .set({'nivel': nivel}, SetOptions(merge: true));
 
-        widget.user.nivel = nivel; 
+        widget.user.nivel = nivel;
+      } catch (e) {
+        // Si la creación/actualización falla, notificar al usuario
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error al guardar la configuración inicial: $e"),
+          ),
+        );
+        return;
+      }
     }
 
     if (currentPage < setupPages.length - 1) {
@@ -79,11 +106,9 @@ class _AccountSetupScreenState extends State<AccountSetupScreen> {
       );
     } else {
       Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => MainScreen(user: widget.user),
-      ),
-    );
+        context,
+        MaterialPageRoute(builder: (_) => MainScreen(user: widget.user)),
+      );
     }
   }
 
@@ -126,13 +151,12 @@ class _AccountSetupScreenState extends State<AccountSetupScreen> {
                   final page = setupPages[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 20),
+                      horizontal: 32,
+                      vertical: 20,
+                    ),
                     child: Column(
                       children: [
-                        SvgPicture.network(
-                          page.imageSvg,
-                          height: 140,
-                        ),
+                        SvgPicture.network(page.imageSvg, height: 140),
                         const SizedBox(height: 15),
                         Text(
                           page.title,
@@ -147,8 +171,7 @@ class _AccountSetupScreenState extends State<AccountSetupScreen> {
 
                         // Opciones
                         ...List.generate(page.options.length, (optIndex) {
-                          final isSelected =
-                              selectedOptions[index] == optIndex;
+                          final isSelected = selectedOptions[index] == optIndex;
                           return GestureDetector(
                             onTap: () {
                               setState(() {
@@ -157,8 +180,7 @@ class _AccountSetupScreenState extends State<AccountSetupScreen> {
                             },
                             child: Container(
                               margin: const EdgeInsets.symmetric(vertical: 8),
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 14),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? const Color(0xFF472D30)

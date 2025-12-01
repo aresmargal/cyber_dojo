@@ -5,7 +5,7 @@ class UserModel {
   final String alias;
   final String email;
   final String username;
-  final String password;
+  final String? password;
   final Map<String, Map<String, dynamic>>? progresoCursos;
   
   final String? fotoPerfil;
@@ -21,7 +21,7 @@ class UserModel {
     required this.alias,
     required this.email,
     required this.username,
-    required this.password,
+    this.password,
     this.fotoPerfil,
     this.nivel,
     this.badges,
@@ -46,7 +46,7 @@ class UserModel {
       alias: data['alias'] ?? '',
       email: data['email'] ?? '',
       username: data['username'] ?? '',
-      password: data['password'] ?? '',
+      password: null,
       fotoPerfil: data['fotoPerfil'],
       nivel: data['nivel'],
       badges: data['badges'] != null ? List<int>.from(data['badges']) : [],
@@ -70,7 +70,6 @@ class UserModel {
       'alias': alias,
       'email': email,
       'username': username,
-      'password': password,
       'fotoPerfil': fotoPerfil, 
       'nivel': nivel,
       'badges': badges ?? [],

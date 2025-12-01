@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cyber_dojo/models/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/auth/login_screen.dart';
 import 'package:cyber_dojo/screens/accountSetup/account_setup_screen.dart';
@@ -28,28 +29,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final String name = _nameController.text.trim();
     final String username = _usernameController.text.trim();
     final String email = _emailController.text.trim();
-    final String password = _passwordController.text.trim();
+    final String password = _passwordController.text.trim(); // Solo para Auth
 
     try {
-      final docRef = await FirebaseFirestore.instance.collection('users').add({
+      final userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      final String uid =
+          userCredential.user!.uid; // Obtener el ID seguro de Firebase Auth
+
+      final userData = {
         'alias': name,
         'username': username,
         'email': email,
-        'password': password,
-        'nivel': 'Blanco', // Nivel por defecto, se actualizará en AccountSetup
+        'nivel': 'Blanco', // Nivel por defecto
         'badges': [],
         'fotoPerfil': '',
         'racha': 0,
         'tiempoTotal': 0,
-      });
+        'tiempoHoy': 0,
+        'progreso_cursos': {},
+        'ultimoAcceso' : FieldValue.serverTimestamp(),
+      };
+
+      await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .set(userData);
 
       // Crear UserModel con ID del documento
       final user = UserModel(
-        id: docRef.id,
+        id: uid,
         alias: name,
         username: username,
         email: email,
-        password: password,
+        password: '',
         nivel: 'Blanco',
         badges: [],
         fotoPerfil: '',
@@ -58,7 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString("user_id", docRef.id);
+      await prefs.setString("user_id", uid);
 
       if (mounted) {
         Navigator.pushReplacement(
@@ -67,10 +80,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       }
 
+      /*
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => AccountSetupScreen(user: user)),
-      );
+      );*/
+    } on FirebaseAuthException catch (e) {
+      String message = 'Error de registro.';
+
+      if (e.code == 'weak-password') {
+        message = 'La contraseña es muy débil.';
+      } else if (e.code == 'email-already-in-use') {
+        message = 'El correo ya está registrado.';
+      }
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+
     } catch (e) {
       ScaffoldMessenger.of(
         context,
