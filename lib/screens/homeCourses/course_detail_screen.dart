@@ -72,12 +72,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
           .doc(widget.currentUserId);
 
       await userRef.update({
-      'progreso_cursos.${widget.courseId}': {
-        'completado': false,
-        'lecciones_completadas': 0, 
-        'total_lecciones': course.numLecciones, 
-      },
-    });
+        'progreso_cursos.${widget.courseId}': {
+          'completado': false,
+          'lecciones_completadas': 0,
+          'total_lecciones': course.numLecciones,
+        },
+      });
 
       setState(() {
         _isCourseAdded = true;
@@ -182,13 +182,29 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                       children: [
                         Row(
                           children: [
-                            // Imagen cuadrada
-                            Container(
-                              height: 100,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
+                            //Imagen
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                "https://picsum.photos/id/401/100/100",
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.cover,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Container(
+                                        height: 100,
+                                        width: 100,
+                                        color: Colors.grey[300],
+                                        child: const Center(
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Color(0xFF723D46),
+                                          ),
+                                        ),
+                                      );
+                                    },
                               ),
                             ),
                             const SizedBox(width: 16),

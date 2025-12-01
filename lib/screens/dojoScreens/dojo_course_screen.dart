@@ -144,16 +144,28 @@ class _DojoCourseScreenState extends State<DojoCourseScreen> {
                   children: [
                     Row(
                       children: [
-                        SizedBox(
-                          height: 70,
-                          width: 70,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8),
-                              ),
-                            ),
+                        // Imagen
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            "https://picsum.photos/id/870/70/70",
+                            height: 70,
+                            width: 70,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                height: 70,
+                                width: 70,
+                                color: Colors.grey[300],
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Color(0xFF723D46),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                         SizedBox(width: 12),

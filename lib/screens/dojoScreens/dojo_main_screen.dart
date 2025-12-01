@@ -155,7 +155,10 @@ class _DojoScreenState extends State<DojoScreen> {
                         : Colors.white70;
 
                     return GestureDetector(
-                      onTap: () => widget.onCourseSelected(course["id"]!, course["title"]!),
+                      onTap: () => widget.onCourseSelected(
+                        course["id"]!,
+                        course["title"]!,
+                      ),
                       child: Container(
                         decoration: BoxDecoration(
                           color: const Color(0xB3472D30),
@@ -165,12 +168,29 @@ class _DojoScreenState extends State<DojoScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              height: 70,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
+                            // Imagen
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                "https://picsum.photos/300/70?random=" + index.toString(),
+                                height: 70,
+                                width: double.infinity,
+                                fit: BoxFit.cover, 
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Container(
+                                        height: 70,
+                                        color:
+                                            Colors.grey[300], 
+                                        child: const Center(
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Color(0xFF723D46),
+                                          ),
+                                        ),
+                                      );
+                                    },
                               ),
                             ),
                             const SizedBox(height: 8),

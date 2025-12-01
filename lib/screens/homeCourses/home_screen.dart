@@ -49,12 +49,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<CourseData> _fetchAndFilterCourses() async {
     try {
       // Obtener la últimna versión del progreso del usuario
-    final userDoc = await FirebaseFirestore.instance
-        .collection('users') // Usar 'users', como confirmaste
-        .doc(widget.currentUser.id)
-        .get();
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users') // Usar 'users', como confirmaste
+          .doc(widget.currentUser.id)
+          .get();
 
-    final userProgress = userDoc.data()?['progreso_cursos'] as Map<String, dynamic>? ?? {};
+      final userProgress =
+          userDoc.data()?['progreso_cursos'] as Map<String, dynamic>? ?? {};
 
       // Obtener todos los cursos de Firestore
       final courseSnapshot = await FirebaseFirestore.instance
@@ -214,8 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
     VoidCallback? onTapAction;
 
     if (title == "Nuevas misiones") {
-      onTapAction =
-          widget.onExploreCourses;
+      onTapAction = widget.onExploreCourses;
     } else if (title == "Tu entrenamiento en curso") {
       onTapAction = widget.onGoToDojo;
     }
@@ -274,22 +274,22 @@ class _HomeScreenState extends State<HomeScreen> {
           return GestureDetector(
             onTap: () {
               if (isCurrentCourses) {
-              // Llama al callback para ir al flujo de Dojo (lecciones)
-              widget.onCourseSelected(course.idCurso, course.titulo);
-            } else {
-              // Navega directamente a la pantalla de detalles (sin iniciar el curso)
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CourseDetailScreen(
-                    courseId: course.idCurso, 
-                    currentUserId: widget.currentUser.id,
+                // Llama al callback para ir al flujo de Dojo (lecciones)
+                widget.onCourseSelected(course.idCurso, course.titulo);
+              } else {
+                // Navega directamente a la pantalla de detalles (sin iniciar el curso)
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CourseDetailScreen(
+                      courseId: course.idCurso,
+                      currentUserId: widget.currentUser.id,
+                    ),
                   ),
-                ),
-              ).then((result){
-                if (result == true) _rechargeCourses();
-              });
-            }
+                ).then((result) {
+                  if (result == true) _rechargeCourses();
+                });
+              }
             },
             child: Container(
               width: 140,
@@ -300,14 +300,29 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               padding: const EdgeInsets.all(12),
               child: Column(
+                // Imagen
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // TODO: Imagen del curso (cuadrado temporal)
-                  Container(
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      "https://picsum.photos/300/70?random=" + index.toString(),
+                      height: 70,
+                      width: double.infinity,
+                      fit: BoxFit.cover, 
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          height: 70,
+                          color: Colors.grey[300], 
+                          child: const Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Color(0xFF723D46),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 10),

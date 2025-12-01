@@ -74,14 +74,39 @@ class DojoLessonTextScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Imagen superior
-                    Container(
-                      height: 180,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        "https://picsum.photos/id/1018/600/300", 
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover, 
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            height: 180,
+                            color: Colors
+                                .grey[300], // Muestra un color mientras carga
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF723D46),
+                              ),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 180,
+                            color: Colors.red[100],
+                            child: const Center(
+                              child: Text(
+                                'Error al cargar imagen',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                      // image.png
                     ),
                     const SizedBox(height: 12),
 
