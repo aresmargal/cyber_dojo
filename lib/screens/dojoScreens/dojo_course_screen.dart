@@ -202,6 +202,7 @@ class _DojoCourseScreenState extends State<DojoCourseScreen> {
                             horizontal: 16,
                           ),
                         ),
+
                         onPressed: () {
                           widget.onLessonSelected(
                             course.titulo,

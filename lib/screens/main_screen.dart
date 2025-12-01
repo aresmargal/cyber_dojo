@@ -31,6 +31,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   String? _selectedLessonId;
   String? _selectedLessonTitle;
   String? _selectedCourseDescription;
+
   List<String> _selectedCourseMedals = [];
   bool _courseCompleted =
       false; // Bandera para controlar la finalización del curso
@@ -77,6 +78,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       _selectedLessonTitle = null;
       _courseCompleted = true; // Activar la pantalla de finalización
     });
+    _refreshUserData();
   }
 
   void _saveSessionTime() async {
@@ -156,7 +158,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
         setState(() {
           _currentUser = updatedUser;
-          print("Datos del usuario refrescados desde Firestore.");
+          print("Datos del usuario refrescados desde Firestore."); //Debug
+          print("Progreso cursos: ${_currentUser.progresoCursos}"); // Debug
         });
       }
     } catch (e) {
@@ -180,6 +183,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       _selectedCourseDescription = courseDescription;
       _totalLessonsInCourse = numLeccionesTotal;
       _selectedCourseMedals = courseMedals;
+      _selectedIndex = 1;
     });
   }
 
@@ -205,11 +209,14 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     // Si el curso acaba de terminar, muestra la pantalla de finalización
     if (_courseCompleted) {
       body = DojoCourseCompletedScreen(
-        courseTitle: _selectedCourseTitle!,
-        courseDescription: _selectedCourseDescription!,
-        courseImage: "https://picsum.photos/200",
+        courseTitle: _selectedCourseTitle ?? "Curso",
+        courseDescription: _selectedCourseDescription ?? "",
+        courseImage: "https://picsum.photos/400/200",
+        numLecciones: _totalLessonsInCourse ?? 0,
         medals: _selectedCourseMedals,
-        onBackToCourses: () {
+        onBackToCourses: () async {
+          await _refreshUserData();
+
           setState(() {
             _selectedCourseId = null;
             _selectedCourseTitle = null;
@@ -219,7 +226,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         },
       );
 
-    // Si hay una lección activa (ejecutándose), muestra el contenedor de la lección
+      // Si hay una lección activa (ejecutándose), muestra el contenedor de la lección
     } else if (_selectedLessonId != null) {
       body = DojoLessonContainerScreen(
         idLeccion: _selectedLessonId!,
@@ -256,7 +263,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 lessonTitle,
                 courseDescription,
                 numLeccionesTotal,
-                courseMedals,
+                courseMedals
               );
             },
       );
@@ -271,6 +278,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
             setState(() {
               _selectedCourseId = courseId;
               _selectedCourseTitle = courseTitle;
+              _selectedIndex = 1;
             });
           },
           currentUser: _currentUser,
@@ -451,10 +459,28 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         currentIndex: _selectedIndex,
         onTap: (index) {
           setState(() {
-            _selectedCourseId = null;
-            _selectedCourseTitle = null;
-            _selectedLessonId = null;
-            _selectedLessonTitle = null;
+
+            // Limpiar todo el estado del curso solo si el user NO está en courseCompleted
+            if (!_courseCompleted) {
+              _selectedCourseId = null;
+              _selectedCourseTitle = null;
+              _selectedLessonId = null;
+              _selectedLessonTitle = null;
+              _selectedCourseDescription = null;
+              _totalLessonsInCourse = null;
+              _selectedCourseMedals = [];
+            } else {
+              // Si está en courseCompleted, limpiar todo incluyendo el flag
+              _selectedCourseId = null;
+              _selectedCourseTitle = null;
+              _selectedLessonId = null;
+              _selectedLessonTitle = null;
+              _selectedCourseDescription = null;
+              _totalLessonsInCourse = null;
+              _selectedCourseMedals = [];
+              _courseCompleted = false;
+            }
+            
             _selectedIndex = index;
           });
 
