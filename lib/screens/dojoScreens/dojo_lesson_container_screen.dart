@@ -10,6 +10,9 @@ class DojoLessonContainerScreen extends StatefulWidget {
   final String lessonTitle;
   final VoidCallback onLessonCompleted; // Callback cuando la lección termina
   final VoidCallback onBackToLessons;
+  final VoidCallback onCourseCompleted; // Callback cuando el curso termina
+  final String courseId;
+  final int numLeccionesTotal;
 
   const DojoLessonContainerScreen({
     super.key,
@@ -18,6 +21,9 @@ class DojoLessonContainerScreen extends StatefulWidget {
     required this.lessonTitle,
     required this.onLessonCompleted,
     required this.onBackToLessons,
+    required this.onCourseCompleted,
+    required this.courseId,
+    required this.numLeccionesTotal,
   });
 
   @override
@@ -51,18 +57,41 @@ class _DojoLessonContainerScreenState extends State<DojoLessonContainerScreen> {
     return _blocks;
   }
 
+  // Función para comprobar si la lección actual es la última del curso
+  bool _checkIfLastLesson() {
+    // Obtener ID de la lección actual
+    final String id = widget.idLeccion;
+    final parts = id.split('_');
+
+    if (parts.length < 3) return false; // ID mal formado
+
+    // Obtener el último segmento
+    final String lessonNumberString = parts.last;
+
+    final int? currentLessonNumber = int.tryParse(lessonNumberString);
+    if (currentLessonNumber == null) return false; // Error de formato
+
+    return currentLessonNumber == widget.numLeccionesTotal;
+  }
+
   // Función de paso AUTOMÁTICO al siguiente bloque
   void _nextBlock() {
-    if (_currentBlockIndex < _blocks.length - 1) {
-      // Si hay más bloques, se avanza el índice
-      setState(() {
-        _currentBlockIndex++;
-      });
+  if (_currentBlockIndex < _blocks.length - 1) {
+    // Si aún quedan bloques, se avanza
+    setState(() {
+      _currentBlockIndex++;
+    });
+    
+  } else {
+    // Si el bloque es el último 
+    
+    if (_checkIfLastLesson()) {
+      widget.onCourseCompleted(); 
     } else {
-      // Si no hay más bloques, la lección ha finalizado
-      widget.onLessonCompleted();
+      widget.onLessonCompleted(); 
     }
   }
+}
 
   // Función para construir el widget del bloque actual
   Widget _buildCurrentBlockWidget() {
@@ -110,7 +139,7 @@ class _DojoLessonContainerScreenState extends State<DojoLessonContainerScreen> {
         correctAnswerIndex: indiceRespuestaCorrecta,
 
         onBack: widget
-            .onBackToLessons, // Volver a la lista de lecciones si pulsa atrás (O puedes poner _nextBlock si quieres que salte al siguiente bloque al pulsar atrás en una pregunta)
+            .onBackToLessons, // Volver a la lista de lecciones si pulsa atrás
         onNext:
             _nextBlock, // Llama a la función que avanza el índice del contenedor
       );

@@ -6,7 +6,15 @@ import 'package:flutter/material.dart';
 class DojoCourseScreen extends StatefulWidget {
   final String courseId;
   final VoidCallback onBack;
-  final void Function(String courseTitle, String idLeccion, String lessonTitle) onLessonSelected;
+  final void Function(
+    String courseTitle,
+    String idLeccion,
+    String lessonTitle,
+    String courseDescription,
+    int numLeccionesTotal,
+    List<String> courseMedals,
+  )
+  onLessonSelected;
 
   const DojoCourseScreen({
     super.key,
@@ -198,7 +206,12 @@ class _DojoCourseScreenState extends State<DojoCourseScreen> {
                           widget.onLessonSelected(
                             course.titulo,
                             lesson.idLeccion,
-                            lesson.titulo
+                            lesson.titulo,
+                            course.descripcion,
+                            course.numLecciones,
+                            (course.badgeIds)
+                                .map((id) => id.toString())
+                                .toList(),
                           );
                         },
                         child: Row(

@@ -25,11 +25,15 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _selectedIndex = 0; // 0 = home, 1 = dojo, etc.
+  int? _totalLessonsInCourse; // Total de lecciones de curso
   String? _selectedCourseId; // Guarda el id del curso actual en String
   String? _selectedCourseTitle; // Guarda el Título del curso.
-  //Map<String, String>? _selectedLesson; // Guarda la lección actual
   String? _selectedLessonId;
   String? _selectedLessonTitle;
+  String? _selectedCourseDescription;
+  List<String> _selectedCourseMedals = [];
+  bool _courseCompleted =
+      false; // Bandera para controlar la finalización del curso
   bool _editingProfile = false; //Datos de perfil en edición o no
   bool _viewingBadges = false; //Bool para ver o no las medallas
   late UserModel _currentUser;
@@ -65,6 +69,14 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       print('AppLifecycleState: paused/inactive. Guardando tiempo.');
       _saveSessionTime();
     }
+  }
+
+  void _finishCourse() {
+    setState(() {
+      _selectedLessonId = null;
+      _selectedLessonTitle = null;
+      _courseCompleted = true; // Activar la pantalla de finalización
+    });
   }
 
   void _saveSessionTime() async {
@@ -153,160 +165,113 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   }
 
   // Función para iniciar una lección
-  void _startLesson(String courseTitle, String idLeccion, String lessonTitle) {
+  void _startLesson(
+    String courseTitle,
+    String idLeccion,
+    String lessonTitle,
+    String courseDescription,
+    int numLeccionesTotal,
+    List<String> courseMedals,
+  ) {
     setState(() {
-      _selectedCourseTitle = courseTitle; 
-      _selectedLessonId = idLeccion; 
-      _selectedLessonTitle = lessonTitle; 
+      _selectedCourseTitle = courseTitle;
+      _selectedLessonId = idLeccion;
+      _selectedLessonTitle = lessonTitle;
+      _selectedCourseDescription = courseDescription;
+      _totalLessonsInCourse = numLeccionesTotal;
+      _selectedCourseMedals = courseMedals;
     });
   }
 
   // Función para volver al listado de lecciones
   void _backToLessons() {
     setState(() {
-      _selectedLessonId = null; 
-      _selectedLessonTitle = null; 
+      _selectedLessonId = null;
+      _selectedLessonTitle = null;
     });
   }
 
   // Función para una lección completada
   void _lessonCompleted() {
     //  guardar el progreso o navegar a la pantalla de "Lección Completada"
-    // Por simplicidad, volvemos a la lista de lecciones.
     _backToLessons();
-    
-    // Si quisieras la pantalla de COMPLETADO:
-    // setState(() => _courseCompleted = true);
   }
 
   // Manejo de la informacion que se muestra en el body
   @override
   Widget build(BuildContext context) {
-    Widget body;
-    // Si hay un ID de lección activo, se muestra el contenedor de la lección
-    // Se encarga de msotrar TEXTO, PREGUNTA o COMPLETED
-    if (_selectedLessonId != null) {
-      body = DojoLessonContainerScreen(
-        idLeccion: _selectedLessonId!, 
-        courseTitle: _selectedCourseTitle!, 
-        lessonTitle: _selectedLessonTitle!, 
-        onLessonCompleted: _lessonCompleted, 
-        onBackToLessons: _backToLessons
-        );
+    Widget body = const Center(child: Text("Cargando..."));
 
-        // Si hay un ID de curso activo, pero no una lección, se vuelve a la lista de lecicones
-    } else if (_selectedCourseId != null) {
-      body = DojoCourseScreen(
-        courseId: _selectedCourseId!, 
-        onBack: () => setState(() {
-          _selectedCourseId = null;
-          _selectedCourseTitle = null;
-        }), 
-        onLessonSelected: (courseTitle, idLeccion, lessonTitle){
-        _startLesson(courseTitle, idLeccion, lessonTitle);
-        },
-        );
-        
-        // Logica de navegacion principal (Home, Dojo, Courses, Profile)
-    } else {
-      Widget screen = const Center( child: Text("Pantalla no encontrada"),);
-
-/*
-
-
-      // Mostrar pantalla de pregunta
-      body = DojoLessonQuestionScreen(
-        courseTitle: _selectedCourseTitle!,
-        lessonTitle: _selectedLesson!["title"]!,
-        questionText: "¿Cuál de las siguientes contraseñas es más segura?",
-        options: ["12345678", "Lyd!@2024", "contraseña"],
-        correctAnswerIndex: 1,
-        onBack: () {
-          // Volver al texto de la lección
-          setState(() {
-            _selectedLesson = {
-              "title": _selectedLesson!["title"]!,
-              "text": _selectedLesson!["text"]!,
-            };
-          });
-        },
-        onNext: () {
-          // Volver al listado de lecciones
-          //setState(() => _selectedLesson = null);
-          //Prueba completed screen
-          setState(() {
-            _selectedLesson = {
-              "type": "completed",
-              "title": _selectedLesson!["title"]!,
-              "text": _selectedLesson!["text"]!,
-            };
-          });
-        },
-      );
-    } else if (_selectedCourseId != null &&
-        _selectedLesson?["type"] == "completed") {
+    // Si el curso acaba de terminar, muestra la pantalla de finalización
+    if (_courseCompleted) {
       body = DojoCourseCompletedScreen(
         courseTitle: _selectedCourseTitle!,
-        courseDescription:
-            "Aprende las bases de la ciberseguridad mientras entrenas como un ninja digital.",
-        courseImage: "",
-        medals: ["", "", ""],
+        courseDescription: _selectedCourseDescription!,
+        courseImage: "https://picsum.photos/200",
+        medals: _selectedCourseMedals,
         onBackToCourses: () {
           setState(() {
-            _selectedLesson = null;
-            _selectedCourseTitle = null;
             _selectedCourseId = null;
+            _selectedCourseTitle = null;
+            _courseCompleted = false;
+            _selectedIndex = 1; // Volver al Dojo
           });
         },
       );
-    } else if (_selectedLesson != null) {
-      //Mostrar pantalla de texto
-      body = DojoLessonTextScreen(
+
+    // Si hay una lección activa (ejecutándose), muestra el contenedor de la lección
+    } else if (_selectedLessonId != null) {
+      body = DojoLessonContainerScreen(
+        idLeccion: _selectedLessonId!,
         courseTitle: _selectedCourseTitle!,
-        lessonTitle: _selectedLesson!["title"]!,
-        lessonText: _selectedLesson!["text"]!,
-        onBack: () => setState(() => _selectedLesson = null),
-        onNext: () {
-          // Cambiar al modo "pregunta"
-          setState(() {
-            _selectedLesson = {
-              "type": "question",
-              "title": _selectedLesson!["title"]!,
-              "text": _selectedLesson!["text"]!,
-            };
-          });
-        },
+        lessonTitle: _selectedLessonTitle!,
+        onLessonCompleted: _lessonCompleted,
+        onCourseCompleted: _finishCourse,
+        onBackToLessons: _backToLessons,
+        courseId: _selectedCourseId!,
+        numLeccionesTotal: _totalLessonsInCourse!,
       );
+
+      // Si hay un curso activo, muestra la lista de lecciones del curso
     } else if (_selectedCourseId != null) {
       body = DojoCourseScreen(
         courseId: _selectedCourseId!,
         onBack: () => setState(() {
-          _selectedCourseId = null; 
-          _selectedCourseTitle = null; 
+          _selectedCourseId = null;
+          _selectedCourseTitle = null;
+          _totalLessonsInCourse = null;
         }),
-        onLessonSelected: (lesson) {
-          setState(
-            () => _selectedLesson = {
-              "type": "text",
-              "title": lesson["title"]!,
-              "text": lesson["text"]!,
+        onLessonSelected:
+            (
+              courseTitle,
+              idLeccion,
+              lessonTitle,
+              courseDescription,
+              numLeccionesTotal,
+              courseMedals,
+            ) {
+              _startLesson(
+                courseTitle,
+                idLeccion,
+                lessonTitle,
+                courseDescription,
+                numLeccionesTotal,
+                courseMedals,
+              );
             },
-          );
-        },
       );
-    } else {
-      Widget screen = const Center(
-        child: Text("Pantalla no encontrada"),
-      ); //Valor por defecto por errores
 
-      */
+      // Lógica de navegacion principal (Home, Dojo, Courses, Profile)
+    } else {
+      Widget screen = const Center(child: Text("Pantalla no encontrada"));
 
       if (_selectedIndex == 0) {
         screen = HomeScreen(
           onCourseSelected: (courseId, courseTitle) {
-            setState(() {_selectedCourseId = courseId; 
-            _selectedCourseTitle = courseTitle;});
-          
+            setState(() {
+              _selectedCourseId = courseId;
+              _selectedCourseTitle = courseTitle;
+            });
           },
           currentUser: _currentUser,
           onExploreCourses: () {
@@ -320,7 +285,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         screen = DojoScreen(
           onCourseSelected: (courseId, courseTitle) {
             setState(() {
-              _selectedCourseId = courseId; 
+              _selectedCourseId = courseId;
               _selectedCourseTitle = courseTitle;
             });
           },
@@ -333,7 +298,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         screen = CoursesScreen(
           onCourseSelected: (courseId, courseTitle) {
             setState(() {
-              _selectedCourseId = courseId; 
+              _selectedCourseId = courseId;
               _selectedCourseTitle = courseTitle;
             });
           },
@@ -387,7 +352,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
       body = screen;
     }
-  
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFE1A8),
@@ -488,7 +452,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         onTap: (index) {
           setState(() {
             _selectedCourseId = null;
-            _selectedCourseTitle = null; 
+            _selectedCourseTitle = null;
             _selectedLessonId = null;
             _selectedLessonTitle = null;
             _selectedIndex = index;
