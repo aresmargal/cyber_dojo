@@ -26,6 +26,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _selectedIndex = 0; // 0 = home, 1 = dojo, etc.
   int? _totalLessonsInCourse; // Total de lecciones de curso
+
   String? _selectedCourseId; // Guarda el id del curso actual en String
   String? _selectedCourseTitle; // Guarda el Título del curso.
   String? _selectedLessonId;
@@ -33,12 +34,13 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   String? _selectedCourseDescription;
 
   List<String> _selectedCourseMedals = [];
-  bool _courseCompleted =
-      false; // Bandera para controlar la finalización del curso
+  List<int> _selectedCourseBadges = [];
+
+  bool _courseCompleted = false; // Bandera para controlar la finalización del curso
   bool _editingProfile = false; //Datos de perfil en edición o no
   bool _viewingBadges = false; //Bool para ver o no las medallas
-  late UserModel _currentUser;
 
+  late UserModel _currentUser;
   DateTime? _sessionStartTime; //Variable de tiempo en la app según sesión
 
   @override
@@ -175,6 +177,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     String courseDescription,
     int numLeccionesTotal,
     List<String> courseMedals,
+    List<int> courseBadges,
   ) {
     setState(() {
       _selectedCourseTitle = courseTitle;
@@ -183,6 +186,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       _selectedCourseDescription = courseDescription;
       _totalLessonsInCourse = numLeccionesTotal;
       _selectedCourseMedals = courseMedals;
+      _selectedCourseBadges = courseBadges;
       _selectedIndex = 1;
     });
   }
@@ -237,6 +241,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         onBackToLessons: _backToLessons,
         courseId: _selectedCourseId!,
         numLeccionesTotal: _totalLessonsInCourse!,
+        userId: _currentUser.id,
+        courseBadges: _selectedCourseBadges
       );
 
       // Si hay un curso activo, muestra la lista de lecciones del curso
@@ -256,6 +262,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
               courseDescription,
               numLeccionesTotal,
               courseMedals,
+              courseBadges,
             ) {
               _startLesson(
                 courseTitle,
@@ -263,7 +270,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 lessonTitle,
                 courseDescription,
                 numLeccionesTotal,
-                courseMedals
+                courseMedals,
+                courseBadges
               );
             },
       );
@@ -469,6 +477,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
               _selectedCourseDescription = null;
               _totalLessonsInCourse = null;
               _selectedCourseMedals = [];
+              _selectedCourseBadges = [];
+
             } else {
               // Si está en courseCompleted, limpiar todo incluyendo el flag
               _selectedCourseId = null;
@@ -478,6 +488,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
               _selectedCourseDescription = null;
               _totalLessonsInCourse = null;
               _selectedCourseMedals = [];
+              _selectedCourseBadges = [];
               _courseCompleted = false;
             }
             

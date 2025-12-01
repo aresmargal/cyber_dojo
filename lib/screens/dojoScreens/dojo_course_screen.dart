@@ -13,6 +13,7 @@ class DojoCourseScreen extends StatefulWidget {
     String courseDescription,
     int numLeccionesTotal,
     List<String> courseMedals,
+    List<int> courseBadges,
   )
   onLessonSelected;
 
@@ -213,6 +214,7 @@ class _DojoCourseScreenState extends State<DojoCourseScreen> {
                             (course.badgeIds)
                                 .map((id) => id.toString())
                                 .toList(),
+                            course.badgeIds,
                           );
                         },
                         child: Row(
