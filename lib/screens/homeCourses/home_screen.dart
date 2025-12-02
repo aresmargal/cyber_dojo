@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cyber_dojo/models/TipModel.dart';
 import 'package:cyber_dojo/models/course.dart';
 import 'package:cyber_dojo/models/user.dart';
 import 'package:cyber_dojo/screens/homeCourses/course_detail_screen.dart';
@@ -32,6 +35,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late Future<CourseData> _coursesFuture;
+  TipModel? _dailyTip;
+  bool _isTipLoading = true;
 
   void _rechargeCourses() {
     setState(() {
@@ -43,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _coursesFuture = _fetchAndFilterCourses();
+    _fetchDailyTip();
   }
 
   // Función asíncrona para obtener y clasificar los cursos
@@ -91,6 +97,44 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       // Devolver listas vacías en caso de error
       return CourseData([], []);
+    }
+  }
+
+  Future<void> _fetchDailyTip() async {
+    try {
+      final tipSnapshot = await FirebaseFirestore.instance
+          .collection('tips')
+          .get();
+
+      if (tipSnapshot.docs.isNotEmpty) {
+        final docs = tipSnapshot.docs;
+        // Seleccionar un documento aleatoriamente
+        final randomIndex = Random().nextInt(docs.length);
+        final randomDoc = docs[randomIndex];
+
+        setState(() {
+          // Crear el modelo a partir del documento de Firestore
+          _dailyTip = TipModel.fromFirestore(randomDoc);
+          _isTipLoading = false;
+        });
+      } else {
+        setState(() {
+          _isTipLoading = false;
+          _dailyTip = TipModel(
+            id: 'default',
+            texto: '¡No hay consejos disponibles! Mantente alerta.',
+          );
+        });
+      }
+    } catch (e) {
+      print("Error al cargar el consejo diario: $e");
+      setState(() {
+        _isTipLoading = false;
+        _dailyTip = TipModel(
+          id: 'error',
+          texto: 'Error al conectar con el servidor de consejos.',
+        );
+      });
     }
   }
 
@@ -144,9 +188,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 const SizedBox(height: 15),
 
-                // --- Ciberconsejo del día ---
+                // --- Ciberconsejo ---
                 const Text(
-                  "Ciber-consejo ninja del día",
+                  "Ciber-consejo ninja",
                   style: TextStyle(
                     color: Color(0xFF723D46),
                     fontSize: 20,
@@ -154,53 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xB3472D30),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Imagen del consejo (segura)
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/buttons/consejo.png',
-                          width: 70,
-                          height: 70,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              width: 70,
-                              height: 70,
-                              color: Colors.white24,
-                              child: const Icon(
-                                Icons.lightbulb,
-                                color: Colors.white,
-                                size: 36,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      // Texto del consejo
-                      const Expanded(
-                        child: Text(
-                          "Nunca compartas tus contraseñas, ni siquiera con tus amigos. "
-                          "Usa contraseñas únicas y seguras en cada cuenta.",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            height: 1.4,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+
+                _isTipLoading ? _buildloadingTipContainer() : _buildDailyTipContainer(_dailyTip?.texto ?? 'Error al cargar el consejo'),
               ],
             ),
           );
@@ -309,12 +308,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       "https://picsum.photos/300/70?random=" + index.toString(),
                       height: 70,
                       width: double.infinity,
-                      fit: BoxFit.cover, 
+                      fit: BoxFit.cover,
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Container(
                           height: 70,
-                          color: Colors.grey[300], 
+                          color: Colors.grey[300],
                           child: const Center(
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
@@ -344,13 +343,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    progressDisplay, // Usamos la variable determinada
+                    progressDisplay, 
                     style: TextStyle(
                       color: isCompleted
                           ? Colors.greenAccent
                           : const Color(
                               0xFFFFE1A8,
-                            ), // Color distinto si está finalizado
+                            ), 
                       fontSize: 13,
                       fontWeight: isCompleted
                           ? FontWeight.bold
@@ -362,6 +361,68 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  // Contenedor del consejo (para el estado de carga)
+  Widget _buildloadingTipContainer() {
+    return Container(
+      height: 102,
+      decoration: BoxDecoration(
+        color: const Color(0xB3472D30),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: const Center(child: CircularProgressIndicator(color: Colors.white),),
+    );
+  }
+
+  //Contenedor del consejo (para el cosnejo cargado)
+  Widget _buildDailyTipContainer(String tipText) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xB3472D30),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Imagen del consejo (segura)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/buttons/consejo.png',
+              width: 70,
+              height: 70,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: 70,
+                  height: 70,
+                  color: Colors.white24,
+                  child: const Icon(
+                    Icons.lightbulb,
+                    color: Colors.white,
+                    size: 36,
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 16),
+          // Texto del consejo
+          Expanded(
+            child: Text(
+              tipText, 
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -74,7 +74,7 @@ class _DojoScreenState extends State<DojoScreen> {
           coursesData.add({
             "id": courseId,
             "title": courseModel.titulo,
-            "lessons": "${courseModel.numLecciones}/$completedLessons",
+            "lessons": "$completedLessons/${courseModel.numLecciones}",
             "belt": courseModel.nivel,
             "isCompleted": isCompleted,
           });
