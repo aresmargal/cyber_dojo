@@ -3,14 +3,12 @@ import 'package:cyber_dojo/models/user.dart';
 import 'package:cyber_dojo/screens/auth/login_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_completed_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_container_screen.dart';
-import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_text_screen.dart';
 import 'package:cyber_dojo/screens/profile/beltsAndBadges_screen.dart';
 import 'package:cyber_dojo/screens/profile/edit_profile_screen.dart';
 import 'package:cyber_dojo/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_main_screen.dart';
 import 'package:cyber_dojo/screens/dojoScreens/dojo_course_screen.dart';
-import 'package:cyber_dojo/screens/dojoScreens/dojo_lesson_question_screen.dart';
 import 'package:cyber_dojo/screens/homeCourses/home_screen.dart';
 import 'package:cyber_dojo/screens/homeCourses/courses_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,7 +34,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   List<String> _selectedCourseMedals = [];
   List<int> _selectedCourseBadges = [];
 
-  bool _courseCompleted = false; // Bandera para controlar la finalización del curso
+  bool _courseCompleted =
+      false; // Bandera para controlar la finalización del curso
   bool _editingProfile = false; //Datos de perfil en edición o no
   bool _viewingBadges = false; //Bool para ver o no las medallas
 
@@ -242,7 +241,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         courseId: _selectedCourseId!,
         numLeccionesTotal: _totalLessonsInCourse!,
         userId: _currentUser.id,
-        courseBadges: _selectedCourseBadges
+        courseBadges: _selectedCourseBadges,
       );
 
       // Si hay un curso activo, muestra la lista de lecciones del curso
@@ -271,7 +270,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 courseDescription,
                 numLeccionesTotal,
                 courseMedals,
-                courseBadges
+                courseBadges,
               );
             },
       );
@@ -467,7 +466,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         currentIndex: _selectedIndex,
         onTap: (index) {
           setState(() {
-
             // Limpiar todo el estado del curso solo si el user NO está en courseCompleted
             if (!_courseCompleted) {
               _selectedCourseId = null;
@@ -478,7 +476,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
               _totalLessonsInCourse = null;
               _selectedCourseMedals = [];
               _selectedCourseBadges = [];
-
             } else {
               // Si está en courseCompleted, limpiar todo incluyendo el flag
               _selectedCourseId = null;
@@ -491,7 +488,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
               _selectedCourseBadges = [];
               _courseCompleted = false;
             }
-            
+
             _selectedIndex = index;
           });
 

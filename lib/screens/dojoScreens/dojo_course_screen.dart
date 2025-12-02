@@ -59,7 +59,7 @@ class _DojoCourseScreenState extends State<DojoCourseScreen> {
 
     final course = CourseModel.fromFirestore(courseDoc);
 
-    // 2. Obtener las LessonModel (filtrando por id_curso y ordenando)
+    // Obtener las LessonModel (filtrando por id_curso y ordenando)
     final lessonsSnapshot = await FirebaseFirestore.instance
         .collection('leccion')
         .where('id_curso', isEqualTo: widget.courseId)

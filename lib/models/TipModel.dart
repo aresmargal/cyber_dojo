@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class TipModel {
   final String id;
   final String texto;
-  
+
   TipModel({required this.id, required this.texto});
 
   factory TipModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {

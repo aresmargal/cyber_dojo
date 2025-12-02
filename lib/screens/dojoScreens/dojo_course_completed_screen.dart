@@ -136,9 +136,9 @@ class _DojoCourseCompletedScreenState extends State<DojoCourseCompletedScreen> {
                       width: 100,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12)
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                        child: widget.courseImage.isNotEmpty
+                      child: widget.courseImage.isNotEmpty
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: Image.network(
@@ -208,80 +208,79 @@ class _DojoCourseCompletedScreenState extends State<DojoCourseCompletedScreen> {
               ? const Center(
                   child: Padding(
                     padding: EdgeInsets.all(20.0),
-                    child: CircularProgressIndicator(
-                      color: Color(0xFF723D46),
-                    ),
+                    child: CircularProgressIndicator(color: Color(0xFF723D46)),
                   ),
                 )
               : _error != null
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Text(
-                          _error!,
-                          style: const TextStyle(color: Color(0xFF472D30)),
-                        ),
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text(
+                      _error!,
+                      style: const TextStyle(color: Color(0xFF472D30)),
+                    ),
+                  ),
+                )
+              : _badges.isEmpty
+              ? const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Text(
+                      'No hay medallas disponibles para este curso',
+                      style: TextStyle(color: Color(0xFF472D30)),
+                    ),
+                  ),
+                )
+              : GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.9,
+                  ),
+                  itemCount: _badges.length,
+                  itemBuilder: (context, index) {
+                    final badge = _badges[index];
+
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xB3472D30),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    )
-                  : _badges.isEmpty
-                      ? const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Text(
-                              'No hay medallas disponibles para este curso',
-                              style: TextStyle(color: Color(0xFF472D30)),
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white70,
+                            ),
+                            child: ClipOval(
+                              child: Image.network(
+                                badge.urlImagen,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        )
-                      : 
-
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              childAspectRatio: 0.9,
-            ),
-            itemCount: _badges.length,
-            itemBuilder: (context, index) {
-              final badge = _badges[index];
-
-              return Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xB3472D30),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white70,
+                          const SizedBox(height: 8),
+                          Text(
+                            badge.nombre,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
-                      child: ClipOval(
-                        child: Image.network(
-                          badge.urlImagen,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      badge.nombre,
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              );
-            },
-          ),
 
           const SizedBox(height: 32),
 

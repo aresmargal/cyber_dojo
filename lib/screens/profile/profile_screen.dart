@@ -40,21 +40,17 @@ class ProfileScreen extends StatelessWidget {
   //Dibujar insignia
   Widget _buildProfileBadgeItem(BadgeModel badge, bool isUnlocked) {
     final backgroundColor = isUnlocked
-        ? const Color(0xB3472D30) 
+        ? const Color(0xB3472D30)
         : const Color(0x69472D30);
 
     return Container(
-      width: 100, 
+      width: 100,
       margin: const EdgeInsets.only(right: 16),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(1, 2),
-          ),
+          BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(1, 2)),
         ],
       ),
       child: Stack(
@@ -65,7 +61,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               // Imagen de la insignia
               Container(
-                height: 50, 
+                height: 50,
                 width: 50,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -83,7 +79,7 @@ class ProfileScreen extends StatelessWidget {
                 child: Text(
                   badge.nombre,
                   textAlign: TextAlign.center,
-                  maxLines: 1, 
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Color(0xFFFFE1A8),
@@ -209,26 +205,26 @@ class ProfileScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             padding: const EdgeInsets.all(16),
-            child: Row( 
-              crossAxisAlignment: CrossAxisAlignment.center, 
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox( 
-                  width: 60, 
-                  child: Center( 
+                SizedBox(
+                  width: 60,
+                  child: Center(
                     child: Image.network(
-                      'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/buttons/reloj.png', 
-                      width: 50, 
-                      height: 50, 
-                      fit: BoxFit.contain, 
+                      'https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/buttons/reloj.png',
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
                 const SizedBox(width: 16),
-                
-                Expanded( 
-                  child: Column( 
-                    crossAxisAlignment: CrossAxisAlignment.start, 
-                    mainAxisAlignment: MainAxisAlignment.center, 
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         "Entrenamiento de hoy: ${formatSeconds(user.tiempoHoy ?? 0)}",
@@ -237,7 +233,7 @@ class ProfileScreen extends StatelessWidget {
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 8), 
+                      SizedBox(height: 8),
                       Text(
                         "Entrenamiento total: ${formatSeconds(user.tiempoTotal ?? 0)}",
                         style: TextStyle(
@@ -296,10 +292,13 @@ class ProfileScreen extends StatelessWidget {
               }
 
               final allAchievements = snapshot.data!;
-              
+
               // Mostrar las primeras 4
               final itemsToShow = min(allAchievements.length, 4);
-              final visibleAchievements = allAchievements.sublist(0, itemsToShow);
+              final visibleAchievements = allAchievements.sublist(
+                0,
+                itemsToShow,
+              );
               final userBadgesIds = user.badges?.cast<int>() ?? [];
 
               return SizedBox(

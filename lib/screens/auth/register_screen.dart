@@ -48,13 +48,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'tiempoTotal': 0,
         'tiempoHoy': 0,
         'progreso_cursos': {},
-        'ultimoAcceso' : FieldValue.serverTimestamp(),
+        'ultimoAcceso': FieldValue.serverTimestamp(),
       };
 
       await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .set(userData);
+          .collection('users')
+          .doc(uid)
+          .set(userData);
 
       // Crear UserModel con ID del documento
       final user = UserModel(
@@ -80,11 +80,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       }
 
-      /*
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => AccountSetupScreen(user: user)),
-      );*/
     } on FirebaseAuthException catch (e) {
       String message = 'Error de registro.';
 
@@ -97,7 +92,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
-
     } catch (e) {
       ScaffoldMessenger.of(
         context,

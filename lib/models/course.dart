@@ -14,18 +14,18 @@ class CourseModel {
     required this.nivel,
     required this.numLecciones,
     required this.descripcion,
-    required this.badgeIds
+    required this.badgeIds,
   });
 
   factory CourseModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return CourseModel(
-      idCurso: doc.id, 
+      idCurso: doc.id,
       titulo: data['titulo'] as String,
       nivel: data['nivel'] as String,
       numLecciones: data['num_lecciones'] as int,
       descripcion: data['descripcion'] as String,
-      badgeIds: List<int>.from(data['badges'] ?? [])
+      badgeIds: List<int>.from(data['badges'] ?? []),
     );
   }
 }

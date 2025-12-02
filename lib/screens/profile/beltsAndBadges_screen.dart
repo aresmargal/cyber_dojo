@@ -84,7 +84,7 @@ class BeltsAndBadgesScreen extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: size * 0.11, // Tamaño proporcional
+                          fontSize: size * 0.11, 
                           fontWeight: FontWeight.w500,
                         ),
                       ),

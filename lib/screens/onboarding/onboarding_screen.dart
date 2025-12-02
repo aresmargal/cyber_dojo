@@ -17,18 +17,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<Map<String, String>> onboardingData = [
     {
-      "image": "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/onBng/onBng1.svg",
+      "image":
+          "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/onBng/onBng1.svg",
       "title": "Entrena como un ninja digital",
       "subtitle": "Domina la ciberseguridad desde cero",
     },
     {
-      "image": "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/onBng/onBng2.svg",
+      "image":
+          "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/onBng/onBng2.svg",
       "title": "Avanza de cinturón en cinturón",
       "subtitle":
           "Supera lecciones y sube de rango en tu camino a la ciberseguridad",
     },
     {
-      "image": "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/onBng/onBng3.svg",
+      "image":
+          "https://raw.githubusercontent.com/aresmargal/cyber_dojo_assets/main/onBng/onBng3.svg",
       "title": "Protege, aprende, domina",
       "subtitle": "Conviértete en un experto en seguridad paso a paso",
     },

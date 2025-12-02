@@ -42,6 +42,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _selectedAvatar = widget.user.fotoPerfil;
   }
 
+  // Dialog de la selección de la foto de perfil 
   void _showAvatarPicker() {
     showDialog(
       context: context,
@@ -105,7 +106,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         children: [
           const SizedBox(height: 20),
 
-          //  Botón volver arriba
+          // Botón volver arriba
           Align(
             alignment: Alignment.centerLeft,
             child: IconButton(
@@ -229,7 +230,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   nivel: widget.user.nivel,
                   tiempoTotal: widget.user.tiempoTotal,
                   badges: widget.user.badges,
-                  racha: widget.user.racha
+                  racha: widget.user.racha,
                 );
 
                 if (mounted) {

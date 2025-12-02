@@ -60,7 +60,7 @@ class DojoLessonTextScreen extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          //  Bloque principal
+          // Bloque principal
           Expanded(
             child: SingleChildScrollView(
               child: Container(
@@ -77,16 +77,15 @@ class DojoLessonTextScreen extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        "https://picsum.photos/id/1018/600/300", 
+                        "https://picsum.photos/id/1018/600/300",
                         height: 180,
                         width: double.infinity,
-                        fit: BoxFit.cover, 
+                        fit: BoxFit.cover,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
                           return Container(
                             height: 180,
-                            color: Colors
-                                .grey[300], // Muestra un color mientras carga
+                            color: Colors.grey[300], 
                             child: const Center(
                               child: CircularProgressIndicator(
                                 color: Color(0xFF723D46),

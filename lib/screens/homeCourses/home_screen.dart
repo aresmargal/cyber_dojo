@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       // Obtener la últimna versión del progreso del usuario
       final userDoc = await FirebaseFirestore.instance
-          .collection('users') // Usar 'users', como confirmaste
+          .collection('users') 
           .doc(widget.currentUser.id)
           .get();
 
@@ -199,7 +199,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                _isTipLoading ? _buildloadingTipContainer() : _buildDailyTipContainer(_dailyTip?.texto ?? 'Error al cargar el consejo'),
+                _isTipLoading
+                    ? _buildloadingTipContainer()
+                    : _buildDailyTipContainer(
+                        _dailyTip?.texto ?? 'Error al cargar el consejo',
+                      ),
               ],
             ),
           );
@@ -294,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 140,
               margin: const EdgeInsets.only(right: 16),
               decoration: BoxDecoration(
-                color: const Color(0xB3472D30), // 70%
+                color: const Color(0xB3472D30), 
                 borderRadius: BorderRadius.circular(16),
               ),
               padding: const EdgeInsets.all(12),
@@ -343,13 +347,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    progressDisplay, 
+                    progressDisplay,
                     style: TextStyle(
                       color: isCompleted
                           ? Colors.greenAccent
-                          : const Color(
-                              0xFFFFE1A8,
-                            ), 
+                          : const Color(0xFFFFE1A8),
                       fontSize: 13,
                       fontWeight: isCompleted
                           ? FontWeight.bold
@@ -373,7 +375,9 @@ class _HomeScreenState extends State<HomeScreen> {
         color: const Color(0xB3472D30),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Center(child: CircularProgressIndicator(color: Colors.white),),
+      child: const Center(
+        child: CircularProgressIndicator(color: Colors.white),
+      ),
     );
   }
 
@@ -414,7 +418,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // Texto del consejo
           Expanded(
             child: Text(
-              tipText, 
+              tipText,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 15,

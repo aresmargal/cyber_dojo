@@ -73,7 +73,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
-
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -108,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Texto motivador
+                // Texto principal
                 const Text(
                   "Tu entrenamiento te espera",
                   style: TextStyle(

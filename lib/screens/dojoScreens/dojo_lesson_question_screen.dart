@@ -41,7 +41,7 @@ class _DojoLessonQuestionScreenState extends State<DojoLessonQuestionScreen> {
     if (!_isCorrect) {
       Future.delayed(const Duration(seconds: 1), () {
         setState(() {
-          _isAnswered = false; // reactivar opciones si no es correcta
+          _isAnswered = false; // Reactivar opciones si no es correcta
         });
       });
     }
@@ -117,10 +117,10 @@ class _DojoLessonQuestionScreenState extends State<DojoLessonQuestionScreen> {
               Color optionColor;
 
               if (_isAnswered) {
-                 optionColor = isSelected
+                optionColor = isSelected
                     ? (_isCorrect
-                        ? const Color(0xFF472D30) // correcto
-                        : Colors.red.shade900.withOpacity(0.8)) // incorrecto
+                          ? const Color(0xFF472D30) // correcto
+                          : Colors.red.shade900.withOpacity(0.8)) // incorrecto
                     : const Color(0x80723D46);
               } else {
                 optionColor = isSelected
@@ -166,8 +166,10 @@ class _DojoLessonQuestionScreenState extends State<DojoLessonQuestionScreen> {
                 onPressed: _isAnswered ? null : _checkAnswer,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF723D46),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 14,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -188,8 +190,10 @@ class _DojoLessonQuestionScreenState extends State<DojoLessonQuestionScreen> {
               const SizedBox(height: 16),
               Center(
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: _isCorrect
                         ? Colors.green.shade700

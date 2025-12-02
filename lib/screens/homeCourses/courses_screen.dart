@@ -23,8 +23,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
 
   void _rechargeCourses() {
     setState(() {
-      _newCoursesFuture =
-          _fetchNewCourses(); // Fuerza a FutureBuilder a ejecutar _fetchNewCourses() de nuevo
+      _newCoursesFuture = _fetchNewCourses(); // Fuerza a FutureBuilder a ejecutar _fetchNewCourses() de nuevo
     });
   }
 
@@ -161,13 +160,13 @@ class _CoursesScreenState extends State<CoursesScreen> {
                               "https://picsum.photos/300/70?random=" + index.toString(),
                               height: 70,
                               width: double.infinity,
-                              fit: BoxFit.cover, 
+                              fit: BoxFit.cover,
                               loadingBuilder:
                                   (context, child, loadingProgress) {
                                     if (loadingProgress == null) return child;
                                     return Container(
                                       height: 70,
-                                      color: Colors.grey[300], 
+                                      color: Colors.grey[300],
                                       child: const Center(
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
