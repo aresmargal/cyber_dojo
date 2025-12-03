@@ -42,6 +42,4 @@ Enlace Figma con la comparación https://www.figma.com/design/ni8arLnCXLH9yakolb
 
 ## Desarrollo del BackEnd
 
-Actualmente (13/11/2025) se está desarrollando la parte del back-end utilizando Firebase, específicamente Firestore Database. Se ha implementado la conexión con la colección `users`, que soporta las pantallas de login y registro (`loginScreen` y `registerScreen`). 
-
-El código relacionado se encuentra en la rama `mainFirebase`.
+Se ha utilizado Firebase para la gestión del backend. El código relacionado se encuentra en la rama `mainFirebase`.  
